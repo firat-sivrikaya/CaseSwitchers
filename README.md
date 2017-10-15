@@ -1,7 +1,7 @@
 ## What is CaseSwitchers?
 
 <p align="center">
-!(CaseSwitchers)[https://github.com/DjCedrics/CaseSwitchers/blob/master/logo_with_background.jpg?raw=true]
+![CaseSwitchers](https://github.com/DjCedrics/CaseSwitchers/blob/master/logo_with_background.jpg?raw=true)
 </p>
 
 Project description will be added here.
