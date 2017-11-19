@@ -4,7 +4,10 @@
 <img src="https://github.com/DjCedrics/CaseSwitchers/blob/master/caseswitchersmacb.png?raw=true">
 </p>
 
-Project description will be added here.
+CaseSwitchers is a collaborative hypertext dictionary where people can find contents or definitions of  computer science and informatics related topics. Unlike traditional dictionaries where users cannot write,edit or comment, users have a control on this web-based dictionary. They can write posts, rate and comment on them. People can find entries about almost every computer-related topics and concepts that are written by the registered users. 
+
+Simply it can be considered as a user based dictionary that provides exchange of information among computer engineers or software developers and keeps its users up-to-date.
+
 
 
 ### Who are we?
