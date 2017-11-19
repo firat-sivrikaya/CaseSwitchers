@@ -9,6 +9,13 @@ CaseSwitchers is a collaborative hypertext dictionary where people can find cont
 Simply it can be considered as a user based dictionary that provides exchange of information among computer engineers or software developers and keeps its users up-to-date.
 
 
+<p align="center">
+<img src="https://github.com/DjCedrics/CaseSwitchers/blob/master/ipadpreview.png?raw=true">
+</p>
+
+CaseSwitchers has a responsive design and provides an excellent user experience in mobile environments.
+
+
 
 ### Who are we?
 
