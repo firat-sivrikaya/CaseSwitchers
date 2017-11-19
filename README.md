@@ -1,7 +1,7 @@
 ## What is CaseSwitchers?
 
 <p align="center">
-<img src="https://github.com/DjCedrics/CaseSwitchers/blob/master/logo_with_background.jpg?raw=true">
+<img src="https://github.com/DjCedrics/CaseSwitchers/blob/master/caseswitchersmacb.png?raw=true">
 </p>
 
 Project description will be added here.
