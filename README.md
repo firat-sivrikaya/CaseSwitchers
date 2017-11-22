@@ -29,6 +29,6 @@ We are a group of Junior / Senior CS students that are taking CS353 Database Sys
 * Gülce Karaçal
 
 ### Reports
-* Project Proposal
-* Design Report
+* !(Project Proposal)[https://github.com/DjCedrics/CaseSwitchers/raw/master/CS353%20Project%20Proposal.pdf]
+* !(Design Report)[https://github.com/DjCedrics/CaseSwitchers/raw/master/Design%20Report.pdf]
 * Final Report 
