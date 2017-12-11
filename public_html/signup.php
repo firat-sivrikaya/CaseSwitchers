@@ -9,19 +9,20 @@ if(isset($_POST['register']))
   if(!empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['repassword'])) 
   {
     if(($_POST['password']) != ($_POST['repassword'])){
-      echo '<div class="alert alert-success" role="alert">Password fields do not match.</div>';
+      echo '<div class="alert alert-danger" role="alert">Passwords do not match.</div>';
     }
 
     else{
-      $query = mysqli_query($db,"SELECT * FROM user WHERE username = '$_POST[username]'") or die(mysqli_error());
+      $query = mysqli_query($db,"SELECT * FROM user WHERE username = '$_POST[username]'") or die(mysqli_error($db));
 
-      if(!$row = mysqli_fetch_array($query, MYSQLI_ASSOC) or die(mysqli_error())){
-          $userName = $_POST['username'];
-          $email = $_POST['email'];
-          $password =  $_POST['password'];
-          $passwordRepeat = $_POST['repassword'];
-          $query = "INSERT INTO User (username,password,email) VALUES ('$userName', '$password', '$email')";
-          $data = mysqli_query ($db,$query)or die(mysqli_error());
+      if(!$row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+          $userName = mysqli_real_escape_string($db,$_POST['username']);
+          $email = mysqli_real_escape_string($db,$_POST['email']);
+          $password =  mysqli_real_escape_string($db,$_POST['password']);
+          $passwordRepeat = mysqli_real_escape_string($db,$_POST['repassword']);
+          $userlevel = "Beginner";
+          $query = "INSERT INTO User (username,password,email, userlevel) VALUES ('$userName', '$password', '$email', '$beginner')";
+          $data = mysqli_query ($db,$query)or die(mysqli_error($db));
           if($data)
           {
             echo '<div class="alert alert-success" role="alert">You registered successfully. Please log in with your details.</div>';
@@ -30,7 +31,7 @@ if(isset($_POST['register']))
       }
 
       else{
-        echo '<div class="alert alert-success" role="alert">Username is already taken.</div>';
+        echo '<div class="alert alert-danger" role="alert">Username is already taken.</div>';
       }   
 
     }
@@ -80,15 +81,15 @@ if(isset($_POST['register']))
                 <form class="bootstrap-form-with-validation" method="post" action="">
                     <div class="form-group has-success has-feedback">
                         <label class="control-label" for="text-input">Username </label>
-                        <input class="form-control" type="text" name="username" id="text-input"><span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span></div>
+                        <input class="form-control" type="text" name="username" id="text-input" required></div>
                     <div class="form-group has-success has-feedback">
                         <label class="control-label" for="text-input">Email </label>
-                        <input class="form-control" type="text" name="email" id="text-input"><span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span></div>
+                        <input class="form-control" type="text" name="email" id="text-input" required></div>
                     <div class="form-group has-warning has-feedback">
                         <label class="control-label" for="password-input">Enter Password</label>
-                        <input class="form-control" type="password" name="password" id="password-input">
+                        <input class="form-control" type="password" name="password" id="password-input" required>
                         <label class="control-label" for="password-input">Re-enter Password</label>
-                        <input class="form-control" type="password" name="repassword" id="password-input"><span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span></div>
+                        <input class="form-control" type="password" name="repassword" id="password-input" required></div>
                     <div class="form-group has-warning">
                         <p class="form-static-control">You can set your other profile details after registration.</p>
                     </div>

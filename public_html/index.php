@@ -10,6 +10,13 @@
 </head>
 
 <body>
+    <?php 
+    if ( isset($_SESSION['logout']))
+    {
+        echo '<div class="alert alert-success" role="alert">Logout successful.</div>'; 
+        unset($_SESSION['logout']);
+    }
+    ?>
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -22,7 +29,7 @@
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li class="active" role="presentation"><a href="#">Home </a></li>
-                    <li role="presentation"><a href="#">Posts </a></li>
+                    <li role="presentation"><a href="posts.php">Posts </a></li>
                     <li role="presentation"><a href="#">Categories </a></li>
                     <li role="presentation"><a href="#">Users </a></li>
                     <li role="presentation"></li>
@@ -38,7 +45,7 @@
             <div class="col-md-12">
                 <div class="jumbotron"><img class="img-responsive" src="assets/img/logo_without_background.png">
                     <p class="text-center">A hypertext dictionary for CS enthusiasts</p>
-                    <p class="text-center"><a class="btn btn-primary btn-lg" role="button" href="#">Login</a><a class="btn btn-info btn-lg" role="button" href="signup.php">Signup </a></p>
+                    <p class="text-center"><a class="btn btn-primary btn-lg" role="button" href="login.php">Login</a><a class="btn btn-info btn-lg" role="button" href="signup.php">Signup </a></p>
                 </div>
             </div>
         </div>
