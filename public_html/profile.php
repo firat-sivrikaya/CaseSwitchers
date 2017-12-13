@@ -1,4 +1,16 @@
-<!DOCTYPE html>
+<?php
+    include("session.php");
+
+    $userid = mysqli_real_escape_string($db,$_GET['id']);
+    $sql = "SELECT * FROM user WHERE userID = '$userid'";
+    $result = mysqli_query($db,$sql);
+    $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+    $count = mysqli_num_rows($result);
+    $userid = $row['userID'];
+    $username = $row['username'];
+    $dateofregistration = $row['date_of_registration'];
+    
+?>
 <html>
 
 <head>
@@ -21,14 +33,20 @@
                 </button><a class="navbar-brand navbar-link" href="#">CaseSwitchers </a></div>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
-                    <li role="presentation"><a href="#">Home </a></li>
-                    <li role="presentation"><a href="#">Posts </a></li>
+                    <li role="presentation"><a href="index.php">Home </a></li>
+                    <li role="presentation"><a href="posts.php">Posts </a></li>
                     <li role="presentation"><a href="#">Categories </a></li>
                     <li role="presentation"><a href="#">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active" role="presentation"><a href="#">Profile </a></li>
+                    <?php   
+                        if(isset($_SESSION['login_user']))
+                        {
+                            echo '<li role="presentation"><a href="profile.php?id='.$login_id.'">Profile </a></li>';
+                            echo '<li role="presentation"><a href="logout.php">Logout </a></li>';
+                        }
+                    ?>
                 </ul>
             </div>
         </div>
@@ -62,10 +80,15 @@
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="list-group">
-                            <li class="list-group-item list-group-item-warning"><span><strong>Username:</strong> FutureIsNow</span></li>
+                            <li class="list-group-item list-group-item-warning"><span><strong>Username:</strong> 
+                            <?php
+                                echo $username;
+                            ?></span></li>
                             <li class="list-group-item list-group-item-warning"><span><strong>Name: </strong>Elon</span></li>
                             <li class="list-group-item list-group-item-warning"><span><strong>Surname: </strong>Musk</span></li>
-                            <li class="list-group-item list-group-item-warning"><span><strong>Date Joined: </strong>15.11.2017 07:49 PM</span></li>
+                            <li class="list-group-item list-group-item-warning"><span><strong>Date Joined: </strong><?php
+                                echo $dateofregistration;
+                            ?></span></li>
                             <li class="list-group-item list-group-item-warning"><span><strong>Bio: </strong>Founded PayPal, SpaceX, Tesla Motors and recently, The Boring Company. Now busy with constructing a hyperloop between Los Angeles and San Francisco.</span></li>
                         </ul>
                     </div>

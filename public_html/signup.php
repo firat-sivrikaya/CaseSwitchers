@@ -21,7 +21,7 @@ if(isset($_POST['register']))
           $password =  mysqli_real_escape_string($db,$_POST['password']);
           $passwordRepeat = mysqli_real_escape_string($db,$_POST['repassword']);
           $userlevel = "Beginner";
-          $query = "INSERT INTO User (username,password,email, userlevel) VALUES ('$userName', '$password', '$email', '$beginner')";
+          $query = "INSERT INTO User (username,password,email, userlevel) VALUES ('$userName', '$password', '$email', '$userlevel')";
           $data = mysqli_query ($db,$query)or die(mysqli_error($db));
           if($data)
           {
@@ -69,7 +69,13 @@ if(isset($_POST['register']))
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li role="presentation"><a href="#">Profile </a></li>
+                    <?php   
+                        if(isset($_SESSION['login_user']))
+                        {
+                            echo '<li role="presentation"><a href="logout.php">Logout </a></li>';
+                            echo '<li role="presentation"><a href="profile.php">Profile </a></li>';
+                        }
+                    ?>
                 </ul>
             </div>
         </div>

@@ -62,13 +62,19 @@
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li role="presentation"><a href="index.php">Home </a></li>
-                    <li role="presentation"><a href="#">Posts </a></li>
+                    <li role="presentation"><a href="posts.php">Posts </a></li>
                     <li role="presentation"><a href="#">Categories </a></li>
                     <li role="presentation"><a href="#">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li role="presentation"><a href="#">Profile </a></li>
+                    <?php   
+                        if(isset($_SESSION['login_user']))
+                        {
+                            echo '<li role="presentation"><a href="profile.php">Profile </a></li>';
+                            echo '<li role="presentation"><a href="logout.php">Logout </a></li>';
+                        }
+                    ?>
                 </ul>
             </div>
         </div>
