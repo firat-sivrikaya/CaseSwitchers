@@ -8,7 +8,11 @@
     $count = mysqli_num_rows($result);
     $userid = $row['userID'];
     $username = $row['username'];
+    $name = $row['name'];
+    $surname = $row['surname'];
+    $profileinfo = $row['profile_info'];
     $dateofregistration = $row['date_of_registration'];
+    $userlevel = $row['userlevel'];
     
 ?>
 <html>
@@ -84,12 +88,18 @@
                             <?php
                                 echo $username;
                             ?></span></li>
-                            <li class="list-group-item list-group-item-warning"><span><strong>Name: </strong>Elon</span></li>
-                            <li class="list-group-item list-group-item-warning"><span><strong>Surname: </strong>Musk</span></li>
+                            <li class="list-group-item list-group-item-warning"><span><strong>Name: </strong><?php
+                                echo $name;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span><strong>Surname: </strong><?php
+                                echo $surname;
+                            ?></span></li>
                             <li class="list-group-item list-group-item-warning"><span><strong>Date Joined: </strong><?php
                                 echo $dateofregistration;
                             ?></span></li>
-                            <li class="list-group-item list-group-item-warning"><span><strong>Bio: </strong>Founded PayPal, SpaceX, Tesla Motors and recently, The Boring Company. Now busy with constructing a hyperloop between Los Angeles and San Francisco.</span></li>
+                            <li class="list-group-item list-group-item-warning"><span><strong>Bio: </strong> <?php
+                                echo $profileinfo;
+                            ?></span></li>
                         </ul>
                     </div>
                 </div>
@@ -99,8 +109,9 @@
                             <li class="list-group-item list-group-item-warning"><span>Rating: 5094</span></li>
                             <li class="list-group-item list-group-item-warning"><span>Total Posts: 2</span></li>
                             <li class="list-group-item list-group-item-warning"><span>Total Comments: 83</span></li>
-                            <li class="list-group-item list-group-item-warning"><span class="bg-info">User Level: Codemeister</span></li>
-                            <li class="list-group-item list-group-item-warning"><span><strong>Bio: </strong>Founded PayPal, SpaceX, Tesla Motors and recently, The Boring Company. Now busy with constructing a hyperloop between Los Angeles and San Francisco.</span></li>
+                            <li class="list-group-item list-group-item-warning"><span class="bg-info">User Level: <?php
+                                echo $userlevel;
+                            ?></span></li>
                         </ul>
                     </div>
                 </div>

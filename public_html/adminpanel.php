@@ -1,5 +1,61 @@
 <?php
     include("session.php");
+
+    if(isset($_POST['create_category'])){
+
+        $category = mysqli_real_escape_string($db, $_POST['create_category_name']);
+
+        $query = "INSERT INTO Category (categoryname) VALUES ('$category')";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+    }
+
+    if(isset($_POST['create_subcategory'])){
+
+        $subcategory = mysqli_real_escape_string($db, $_POST['create_subcategory_name']);
+        $catname = $_POST['parent_category'];
+        //echo '<div class="alert alert-success" role="alert">'.$catname.'</div>';
+
+        $query = "SELECT ID FROM Category WHERE categoryname='$catname'";
+        $result = $db->query($query);
+
+        $row = $result->fetch_assoc();
+        $categoryID = $row["ID"];
+              
+        $query = "INSERT INTO Subcategory (c_id, subcategoryname) VALUES ($categoryID, '$subcategory')";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+    }
+
+    if(isset($_POST['change_subcategory']))
+    {
+        $parentname = $_POST['change_parent_name'];
+        $subcategoryname = $_POST['change_subcategory_name'];
+        
+        $query = "SELECT * FROM Subcategory WHERE subcategoryname='$subcategoryname'";
+        $result = $db->query($query);
+        
+        $row = $result->fetch_assoc();
+        $sub_id = $row['sub_id'];
+        
+        $query = "SELECT * FROM Category WHERE categoryname='$parentname'";
+        $result = $db->query($query);
+        
+        $row = $result->fetch_assoc();    
+        $c_id = $row['ID'];
+        
+        $query = "UPDATE Subcategory SET c_id = '$c_id' WHERE sub_id = '$sub_id'";
+        //$result = $db->query($query);
+        $result = mysqli_query($db,$query)or die(mysqli_error($db));
+        if ($result)
+        {
+            echo '<div class="alert alert-success" role="alert">Parent category of '.$sub_id.' is changed to '.$c_id.' successfully. </div>'; 
+        }
+    }
+
+    /*if(isset($_POST['change_parent'])){
+
+        $newParentID = mysqli_real_escape_string($db, $_POST['newID']);
+
+    }*/
 ?>
 <html>
 
@@ -176,18 +232,20 @@
                     </div>
                 </div>
                 <div class="row">
+                <form method="post" action="">
                     <div class="col-md-12">
                         <h4>Create Category</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Category Name</label>
-                                <input type="text">
+                                <input type="text" name="create_category_name">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button name="create_category" class="btn btn-success" type="submit">Submit </button>
                             </li>
                         </ul>
                     </div>
+                </form>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -205,48 +263,74 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                    <form method="post" action="">
                         <h4>Create Subcategory</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Select Category</label>
-                                <select>
+                                <select name="parent_category">
                                     <optgroup label="This is a group">
-                                        <option value="12" selected="">Blockchain</option>
-                                        <option value="13">This is item 2</option>
-                                        <option value="14">This is item 3</option>
+                                        <?php
+                                            $query = "SELECT categoryname FROM Category";
+                                            $result = $db->query($query);
+                                            while($row = $result->fetch_assoc()){
+                                                $name = $row['categoryname'];
+                                                echo '<option name='.$name.' value='.$name.' style="color: black">'.$name.'</option>';
+                                            }
+                                            $parent_category = $name;
+                                        ?>
                                     </optgroup>
                                 </select>
                             </li>
                             <li class="list-group-item">
                                 <label>Subcategory Name</label>
-                                <input type="text">
+                                <input type="text" name="create_subcategory_name">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button name="create_subcategory" class="btn btn-success" type="submit">Submit </button>
                             </li>
                         </ul>
+                    </form>
                     </div>
                     <div class="col-md-12">
+                    <form method="post" action="">
                         <h4>Change Subcategory Parent</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Select Category</label>
-                                <select>
+                                <select name="change_parent_name">
                                     <optgroup label="This is a group">
-                                        <option value="12" selected="">Blockchain</option>
-                                        <option value="13">This is item 2</option>
-                                        <option value="14">This is item 3</option>
+                                        <?php
+                                            $query = "SELECT categoryname FROM Category";
+                                            $result = $db->query($query);
+                                            while($row = $result->fetch_assoc()){
+                                                $name = $row['categoryname'];
+                                                echo '<option value='.$name.' style="color: black">'.$name.'</option>';
+                                            }
+                                        ?>
                                     </optgroup>
                                 </select>
                             </li>
                             <li class="list-group-item">
-                                <label>Subcategory ID</label>
-                                <input type="text">
+                                <label>Select Subcategory</label>
+                                <select name="change_subcategory_name">
+                                    <optgroup label="This is a group">
+                                        <?php
+                                            $query = "SELECT subcategoryname FROM Subcategory";
+                                            $result = $db->query($query);
+                                            while($row = $result->fetch_assoc()){
+                                                $name = $row['subcategoryname'];
+                                                echo '<option value='.$name.' style="color: black">'.$name.'</option>';
+                                            }
+                                        ?>
+                                    </optgroup>
+                                </select>
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button name="change_subcategory" class="btn btn-success" type="submit">Submit </button>
                             </li>
                         </ul>
+                    </form>
                     </div>
                 </div>
                 <div class="row">

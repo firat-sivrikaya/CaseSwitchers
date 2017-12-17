@@ -1,5 +1,69 @@
 <?php
     include("session.php");
+    date_default_timezone_set('Europe/Istanbul');
+    $time = time();
+    $atime = date('Y-m-d H:i:s',$time);
+
+    if(isset($_POST['submit_post'])){
+
+        $postTitle = mysqli_real_escape_string($db, $_POST['post_title']);
+        $category = mysqli_real_escape_string($db, $_POST['selected_category']);
+        $subCategory = mysqli_real_escape_string($db, $_POST['selected_subcategory']);
+        $postContent = mysqli_real_escape_string($db, $_POST['post_content']);
+
+        $query = "INSERT INTO Entry (creationdate, content) VALUES ('$atime', '$postContent')";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+        $query = "SELECT entryID FROM Entry WHERE creationdate = '$atime' AND content = '$postContent'"; 
+        $result = $db->query($query);
+
+        while($row = $result->fetch_assoc()){
+            $entryID = $row["entryID"]; 
+        }
+
+        $query = "SELECT userID FROM User WHERE username = '$login_session'"; 
+        $result = $db->query($query);
+
+        while($row = $result->fetch_assoc()){
+            $userID = $row["userID"]; 
+        }
+
+        $query = "INSERT INTO Post VALUES ($entryID, '$postTitle')";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+        
+        $query = "INSERT INTO Owns VALUES ($entryID, $userID)";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+
+        $query = "SELECT ID, categoryname FROM Category WHERE categoryname = '$category'"; 
+        $result = $db->query($query);
+        $row = $result->fetch_assoc();
+        $categoryID = $row["ID"]; 
+        $categoryname = $row['categoryname'];
+
+        $query = "SELECT sub_id, subcategoryname FROM subcategory WHERE subcategoryname = '$subCategory'"; 
+        $result = $db->query($query);
+        $row = $result->fetch_assoc();
+        $subcategoryID = $row["sub_id"];
+        $subcategoryname = $row["subcategoryname"];
+        
+        if(!$row)
+        {
+            // Check if subcategory belongs to category. Act accordingly.
+            echo '<div class="alert alert-danger" role="alert">Subcategory '.$subcategoryname.' does not belong to '.$categoryname.'. Please choose the correct category. </div>'; 
+        }
+
+
+        $query = "INSERT INTO PostCategory VALUES ($entryID, $categoryID, $subcategoryID)";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+        
+        if ($data)
+        {
+            echo '<div class="alert alert-success" role="alert">Your post has been submitted!</div>'; 
+        }
+
+    }
 ?>
 <html>
 
@@ -75,56 +139,54 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>The Financial Case for Open Source Softwares</td>
-                                <td>cspro </td>
-                                <td>35 </td>
-                                <td>7 </td>
-                                <td>Fintech </td>
-                            </tr>
-                            <tr>
-                                <td>Is an algorithm just a mathmetical formula?</td>
-                                <td>jack30 </td>
-                                <td>4 </td>
-                                <td>0 </td>
-                                <td>Algorithms </td>
-                            </tr>
-                            <tr>
-                                <td>Future of mobile applications</td>
-                                <td>h4x0r </td>
-                                <td>55 </td>
-                                <td>21 </td>
-                                <td>Mobile Dev</td>
-                            </tr>
-                            <tr>
-                                <td>CS Jokes</td>
-                                <td>aug30 </td>
-                                <td>728 </td>
-                                <td>403 </td>
-                                <td>Humor </td>
-                            </tr>
-                            <tr>
-                                <td>I'm a CS professor at Caltech, AMA!</td>
-                                <td>kevin17 </td>
-                                <td>1282 </td>
-                                <td>1409 </td>
-                                <td>Education </td>
-                            </tr>
-                            <tr>
-                                <td>The Lightning Network</td>
-                                <td>cryptoislove </td>
-                                <td>389 </td>
-                                <td>59 </td>
-                                <td>Blockchain </td>
-                            </tr>
-                            <tr>
-                                <td>Future of Moore's Law</td>
-                                <td>chocho03 </td>
-                                <td>14 </td>
-                                <td>4 </td>
-                                <td>General </td>
-                            </tr>
-                            <tr></tr>
+                        <?php
+                            $query = "SELECT * FROM Post"; 
+                            $result = $db->query($query);
+                            
+                            
+                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                $postid = $row["postID"];
+                                $posttitle = $row["topicname"];
+                                //Select owner ID from postID
+                                $query2 = "SELECT * FROM Owns WHERE e_id = '$postid'";
+                                $result2 = $db->query($query2);
+                                $row = $result2->fetch_assoc();
+                                $postownerid = $row["u_id"];
+                                
+                                //Select username from owner ID
+                                $query3 = "SELECT * FROM User WHERE userID = '$postownerid'";
+                                $result3 = $db->query($query3);
+                                $row = $result3->fetch_assoc();
+                                $postownername = $row['username'];
+                                
+                                
+                                //Select category id from postID
+                                $query4 = "SELECT * FROM Postcategory WHERE p_id = '$postid'";
+                                $result4 = $db->query($query4);
+                                $row = $result4->fetch_assoc();
+                                $postcategoryid = $row['c_id'];
+                                
+                                //Select category name from category ID
+                                $query5 = "SELECT * FROM Category WHERE ID='$postcategoryid'";
+                                $result5 = $db->query($query5);
+                                $row = $result5->fetch_assoc();
+                                $postcategoryname = $row['categoryname'];
+                                
+                                //Select rating from rates
+                                //todo
+                                
+                                //Select comments from comments
+                                //todo
+                               
+                                echo "<tr>";
+                                echo "<td>".$posttitle."</td>";
+                                echo "<td>".$postownername."</td>";
+                                echo "<td>0</td>";
+                                echo '<td>0</td>';
+                                echo '<td>'.$postcategoryname.'</td>';
+                                echo "</tr>";
+                            }
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -137,45 +199,58 @@
         </div>
     </div>
     <div class="container">
+    <form method="post" action="">
         <div class="row">
             <div class="col-md-12">
                 <h4>New Post</h4>
                 <ul class="list-group">
                     <li class="list-group-item">
                         <label>Post Title </label>
-                        <input type="text">
+                        <input name="post_title" type="text">
                     </li>
                     <li class="list-group-item">
                         <label>Select Category</label>
-                        <select>
+                        <select name="selected_category" id="select_subcategory">
                             <optgroup label="This is a group">
-                                <option value="12" selected="">Blockchain</option>
-                                <option value="13">This is item 2</option>
-                                <option value="14">This is item 3</option>
+                                <?php
+                                    $query = "SELECT categoryname FROM Category";
+                                    $result = $db->query($query);
+                                    while($row = $result->fetch_assoc()){
+                                        $name = $row['categoryname'];
+                                        echo '<option name='.$name.' value='.$name.' style="color: black">'.$name.'</option>';
+                                    }
+                                    $parent_category = $name;
+                                ?>
                             </optgroup>
                         </select>
                     </li>
                     <li class="list-group-item">
                         <label>Select Subcategory</label>
-                        <select>
-                            <optgroup label="This is a group">
-                                <option value="13">This is item 2</option>
-                                <option value="12" selected="">Altcoins</option>
-                                <option value="14">This is item 3</option>
-                            </optgroup>
-                        </select>
+                            <select name="selected_subcategory">
+                                <optgroup label="This is a group">
+                                    <?php
+                                        $query = "SELECT subcategoryname FROM Subcategory";
+                                        $result = $db->query($query);
+                                        while($row = $result->fetch_assoc()){
+                                            $name = $row['subcategoryname'];
+                                            echo '<option value='.$name.' style="color: black">'.$name.'</option>';
+                                        }
+                                    ?>
+                                </optgroup>
+                            </select>
                     </li>
                     <li class="list-group-item">
-                        <textarea class="input-lg">Put your post here</textarea>
+                        <textarea class="input-lg" name="post_content">Put your post here</textarea>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <button class="btn btn-success" type="button">Submit </button>
+                <button class="btn btn-success" name="submit_post" type="submit">Submit </button>
             </div>
         </div>
+    </form>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
