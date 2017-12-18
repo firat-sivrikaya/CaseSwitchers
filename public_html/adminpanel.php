@@ -51,6 +51,69 @@
         }
     }
 
+    if(isset($_POST['ban_user']))
+    {
+        $bannedid = $_POST['banned_id'];
+        $adminid = $_SESSION["login_id"];
+        
+        $sql = "SELECT * FROM bannedusers WHERE banned_id = '$bannedid'";
+        $result = mysqli_query($db,$sql);
+        //$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+        $countban = mysqli_num_rows($result);
+        if($countban == 1)
+        {
+            echo '<div class="alert alert-danger" role="alert">User with ID '.$bannedid.' is already banned.</div>';
+        }
+        else
+        {
+            $query = "INSERT INTO bannedusers VALUES ($bannedid, $adminid)";
+            $data = mysqli_query ($db,$query);
+
+
+            if($data)
+            {
+                echo '<div class="alert alert-success" role="alert">User with ID '.$bannedid.' banned successfully. </div>';
+            }
+            else
+            {
+                echo '<div class="alert alert-danger" role="alert">User with ID '.$bannedid.' could not be banned. </div>';
+            }           
+        }
+        
+
+    }
+
+    if(isset($_POST['unban_user']))
+    {
+        $unbannedid = $_POST['unbanned_id'];
+        $adminid = $_SESSION["login_id"];
+        
+        $sql = "SELECT * FROM bannedusers WHERE banned_id = '$unbannedid'";
+        $result = mysqli_query($db,$sql);
+        //$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+        $countban = mysqli_num_rows($result);
+        if($countban == 1)
+        {
+            $sql = "DELETE FROM bannedusers WHERE banned_id = '$unbannedid'";
+            $result = mysqli_query($db,$sql);
+            //$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+            if($result)
+            {
+                echo '<div class="alert alert-success" role="alert">User with ID '.$unbannedid.' unbanned successfully. </div>';
+            }
+            else
+            {
+                echo '<div class="alert alert-danger" role="alert">User with ID '.$unbannedid.' could not be unbanned. </div>';
+            }  
+        }
+        else
+        {
+           echo '<div class="alert alert-danger" role="alert">User with ID '.$unbannedid.' is not in banned users list.</div>';
+        }
+       
+    }
+
     /*if(isset($_POST['change_parent'])){
 
         $newParentID = mysqli_real_escape_string($db, $_POST['newID']);
@@ -208,27 +271,31 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h4>Ban User</h4>
+                        <form method="post" action="">
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>User ID</label>
-                                <input type="text">
+                                <input name="banned_id" type="text">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="ban_user">Submit </button>
                             </li>
                         </ul>
+                        </form>
                     </div>
                     <div class="col-md-12">
                         <h4>Unban User</h4>
+                        <form method="post" action="">
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>User ID</label>
-                                <input type="text">
+                                <input type="text" name="unbanned_id">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" name="unban_user" type="submit">Submit </button>
                             </li>
                         </ul>
+                        </form>
                     </div>
                 </div>
                 <div class="row">

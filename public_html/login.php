@@ -7,35 +7,51 @@
         $myusername = mysqli_real_escape_string($db,$_POST['username']);
         $mypassword = mysqli_real_escape_string($db,$_POST['password']);
         
+        
+        
         $sql = "SELECT * FROM user WHERE username = '$myusername' and password = '$mypassword'";
         $result = mysqli_query($db,$sql);
         $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
         $count = mysqli_num_rows($result);
         $userid = $row["userID"];
         
-        $sql = "SELECT * FROM admin WHERE adminID = '$userid'";
-        $result = mysqli_query($db,$sql);
-        $isadmin = mysqli_fetch_array($result,MYSQLI_ASSOC);
-        $count2 = mysqli_num_rows($result);
+        $query = "SELECT * FROM bannedusers WHERE banned_id = $userid";
+        $result = mysqli_query($db, $query);
+        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        $count3 = mysqli_num_rows($result);
         
-        
-        if($count == 1) {
-            $_SESSION['myusername']= "$myusername";
-            $_SESSION['login_user'] = $myusername;
-            
-            if($count2 == 1)
-            {
-                $_SESSION['admin'] = $isadmin;
-                header("location: adminpanel.php");
-            }
-            else
-            {
-                header("location: posts.php");
-            }         
+        if ( $count3 == 1 )
+        {
+            echo '<div class="alert alert-danger" role="alert">You are banned from the system.</div>';
         }
-        else {
-            echo '<div class="alert alert-danger" role="alert">Username or password is wrong.</div>';
-      }
+        else
+        {
+            $sql = "SELECT * FROM admin WHERE adminID = '$userid'";
+            $result = mysqli_query($db,$sql);
+            $isadmin = mysqli_fetch_array($result,MYSQLI_ASSOC);
+            $count2 = mysqli_num_rows($result);
+
+
+            if($count == 1) {
+                $_SESSION['myusername']= "$myusername";
+                $_SESSION['login_user'] = $myusername;
+
+                if($count2 == 1)
+                {
+                    $_SESSION['admin'] = $isadmin;
+                    header("location: adminpanel.php");
+                }
+                else
+                {
+                    header("location: posts.php");
+                }         
+            }
+            else {
+                echo '<div class="alert alert-danger" role="alert">Username or password is wrong.</div>';
+          }            
+        }
+        
+
     }
 
 ?>

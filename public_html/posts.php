@@ -95,7 +95,11 @@
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">  
-                    <?php   
+                    <?php
+                        if(isset($_SESSION['admin']))
+                        {
+                            echo '<li role="presentation"><a href="adminpanel.php">Admin Panel </a></li>';
+                        }
                         if(isset($_SESSION['login_user']))
                         {
                             echo '<li role="presentation"><a href="profile.php?id='.$login_id.'">Profile </a></li>';
