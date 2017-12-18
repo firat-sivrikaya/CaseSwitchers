@@ -114,6 +114,91 @@
        
     }
 
+    if(isset($_POST['update_bio']))
+    {
+        $userid = $_POST['user_id'];
+        $name = $_POST['user_name'];
+        $surname = $_POST['user_surname'];
+        $bio = $_POST['user_bio'];
+        
+        $sql = "SELECT * FROM user WHERE userID = $userid";
+        $result = mysqli_query($db, $sql);
+        $countuser = mysqli_num_rows($result);
+        if($countuser == 1)
+        {
+            $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            $sql = "UPDATE user SET name = '$name', surname = '$surname', profile_info = '$bio' WHERE userID = $userid";
+            $result = mysqli_query($db, $sql);
+            if($result)
+            {
+                echo '<div class="alert alert-success" role="alert">Profile info of user with ID '.$userid.' is updated successfully. </div>';
+            }
+            else
+            {
+                echo '<div class="alert alert-danger" role="alert">Profile info of user with ID '.$userid.' could not be updated. </div>';
+            }
+        }
+        else
+        {
+            echo '<div class="alert alert-danger" role="alert">User with ID '.$userid.' could not be found. </div>';
+        }
+    }
+
+    if(isset($_POST['delete_post']))
+    {
+
+        
+        $postid = $_POST['delete_post_id'];
+        
+        
+        $sql = "SELECT * FROM post WHERE postID = $postid";
+        $result = mysqli_query($db, $sql);
+        $countpost = mysqli_num_rows($result);
+        if ( $countpost == 1 )
+        {
+            $sql = "DELETE FROM PostCategory WHERE p_id = $postid";
+            $result = mysqli_query($db, $sql);
+
+            $sql = "DELETE FROM owns WHERE e_id = $postid";
+            $result = mysqli_query($db, $sql);
+
+            $sql = "DELETE FROM rates WHERE e_id = $postid";
+            $result = mysqli_query($db, $sql);
+
+            $sql = "SELECT c_id FROM PostComments WHERE p_id = $postid";
+            $result = mysqli_query($db, $sql);
+            while ( $row = mysqli_fetch_array($result, MYSQLI_ASSOC))
+            {
+                $commentid = $row["c_id"];
+                $sql = "DELETE FROM Subcomments WHERE comment_id = $commentid";
+                $result = mysqli_query($db, $sql);
+            }
+
+            $sql = "DELETE FROM PostComments WHERE p_id = $postid";
+            $result = mysqli_query($db, $sql);            
+            
+            $sql = "DELETE FROM Favorites WHERE e_id = $postid";
+            $result = mysqli_query($db, $sql);
+            
+            $sql = "DELETE FROM Post WHERE postID = $postid";
+            $result = mysqli_query($db, $sql);
+            
+            $sql = "DELETE FROM Entry WHERE entryID = $postid";
+            $result = mysqli_query($db, $sql);
+            
+            echo '<div class="alert alert-success" role="alert">Post with ID '.$postid.' is deleted successfully. </div>';
+            
+        }
+        else
+        {
+            echo '<div class="alert alert-danger" role="alert">Post with ID '.$postid.' does not exist. </div>';
+        }
+        
+
+        
+        
+    }
+
     /*if(isset($_POST['change_parent'])){
 
         $newParentID = mysqli_real_escape_string($db, $_POST['newID']);
@@ -225,16 +310,18 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                        <form action="" method="post">
                         <h4>Delete Post</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Post ID</label>
-                                <input type="text">
+                                <input type="text" name="delete_post_id">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="delete_post">Submit </button>
                             </li>
                         </ul>
+                        </form>
                     </div>
                 </div>
                 <div class="row">
@@ -403,26 +490,28 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h4>Update User Bio</h4>
+                        <form action="" method="post">
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>User ID</label>
-                                <input type="text">
+                                <input type="text" name="user_id">
                             </li>
                             <li class="list-group-item">
                                 <label>Name </label>
-                                <input type="text">
+                                <input type="text" name="user_name">
                             </li>
                             <li class="list-group-item">
                                 <label>Surname </label>
-                                <input type="text">
+                                <input type="text" name="user_surname">
                             </li>
                             <li class="list-group-item">
-                                <textarea class="input-lg">Put user bio here</textarea>
+                                <textarea class="input-lg" name="user_bio">Put user bio here</textarea>
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="update_bio">Submit </button>
                             </li>
                         </ul>
+                        </form>
                     </div>
                 </div>
             </div>
