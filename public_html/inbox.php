@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+<?php
+
+	include("session.php");
+
+?>
+
 <html>
 
 <head>
@@ -41,50 +46,108 @@
         <div class="row">
             <div class="col-sm-3 col-sm-offset-9">
                 <div class="row">
+                <form method="post" action="">
                     <div class="col-sm-8 col-sm-pull-1">
-                        <input type="search" name="Search" value="Search" disabled="">
+                        <input type="search" name="Search" placeholder="Search">
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-default btn-sm" type="button">Search </button>
+                        <button class="btn btn-default btn-sm" type="submit">Search </button>
                     </div>
+                </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Message Content</th>
-                                <th>Sender </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Hey John, I really liked your entry about change...</td>
-                                <td>ciovah93 </td>
-                            </tr>
-                            <tr>
-                                <td>Hahah indeed ^^</td>
-                                <td>lucio11 </td>
-                            </tr>
-                            <tr>
-                                <td>Yes please</td>
-                                <td>animeisnowillegal </td>
-                            </tr>
-                            <tr>
-                                <td>I don't know actually, the only thing I know about this issue is....</td>
-                                <td>2344 </td>
-                            </tr>
-                            <tr></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div class="container">	    
+	        <div class="row">
+	            <div class="col-md-12">
+	                <div class="table-responsive">
+	                    <table class="table table-striped">
+	                        <thead>
+	                            <tr>
+	                                <th>Message Content</th>
+	                                <th>User </th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+	                        <?php 
+
+								if(isset($_POST['Search'])){
+
+										$pattern = $_POST['Search'];
+										$query = "SELECT content, sender_id FROM Messages WHERE receiver_id = '$login_id' AND content LIKE '%$pattern%'";
+								        $result = $db->query($query);
+
+			   							if ($result->num_rows > 0) {
+
+										    while($row = $result->fetch_assoc()){
+
+										        $senderID = $row["sender_id"];
+					                        	$query2 = "SELECT username FROM User WHERE userID = '$senderID'";
+					   							$result2 = $db->query($query2);
+					   							$row2 = $result2->fetch_assoc();
+
+										    	if(strlen($row["content"])>30){
+										    		$substrMsg = substr($row["content"],0,30);
+										        	echo '<td><a href="readmessage.php?id='.$senderID.'">'.$substrMsg.'...</td>'; 
+										    	}
+										    	
+										        else
+										        	echo '<td><a href="readmessage.php?id='.$senderID.'">'.$row["content"].'</td>';
+
+										        echo '<td>'.$row2["username"].'</td>';
+										        echo '</tr>';
+
+										    }
+										} 		
+								}
+
+								else{
+
+									$query = "SELECT sub.* FROM (SELECT *
+											FROM Messages as m1
+											WHERE m1.timestamp IN (SELECT MAX(timestamp)
+						                    FROM Messages as m2
+						                    WHERE (m1.sender_id = m2.sender_id and m1.receiver_id = m2.receiver_id) or 
+						                           (m1.sender_id = m2.receiver_id and m1.receiver_id = m2.sender_id)    
+              							      ))sub ORDER BY timestamp DESC";
+	   								$result = $db->query($query);
+
+		   							if ($result->num_rows > 0) {
+
+									    while($row = $result->fetch_assoc()){
+
+									    	if($row["sender_id"] == $login_id)
+									        	$userid = $row["receiver_id"];
+									        else
+									        	$userid = $row["sender_id"];
+
+				                        	$query2 = "SELECT username FROM User WHERE userID = '$userid'";
+				   							$result2 = $db->query($query2);
+				   							$row2 = $result2->fetch_assoc();
+
+									    	if(strlen($row["content"])>30){
+									    		$substrMsg = substr($row["content"],0,30);
+									        	echo '<td><a href="readmessage.php?id='.$userid.'">'.$substrMsg.'...</a></td>'; 
+									    	}
+									    	
+									        else
+									        	echo '<td><a href="readmessage.php?id='.$userid.'">'.$row["content"].'</td>';
+
+									        echo '<td>'.$row2["username"].'</td>';
+									        echo '</tr>';
+
+									    }
+									} 								
+								}
+
+	                            ?>
+	                            <tr></tr>
+	                        </tbody>
+	                    </table>
+	                </div>
+	            </div>
+	        </div>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>

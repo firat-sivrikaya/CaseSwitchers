@@ -1,4 +1,22 @@
-<!DOCTYPE html>
+<?php
+
+    include("session.php");
+
+    date_default_timezone_set('Europe/Istanbul');
+    $time = time();
+    $atime = date('Y-m-d H:i:s',$time);
+
+    $senderid = mysqli_real_escape_string($db,$_GET["id"]);
+
+    if(isset($_POST['sendmessage'])){
+
+        $replymessage = mysqli_real_escape_string($db, $_POST['reply']);
+        $query = "INSERT INTO Messages (sender_id, receiver_id, content) VALUES ($login_id, $senderid, '$replymessage')";
+        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+    }
+?>
+
 <html>
 
 <head>
@@ -40,35 +58,67 @@
         </div>
     </div>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <blockquote>
-                    <p>Hey John! I really liked your most recent entry.</p>
-                    <footer>george44 | Sent: 19/12/2017 01:18 AM</footer>
-                </blockquote>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-11 col-md-offset-1 col-xs-11 col-xs-offset-1">
-                <blockquote>
-                    <p>Thank you for sharing your thoughts with me! </p>
-                    <footer>jonas_cs | Sent 19/12/2017 01:23 AM</footer>
-                </blockquote>
-            </div>
-        </div>
+        <?php
+            $query = "SELECT * FROM Messages WHERE ((receiver_id = '$login_id' AND sender_id = '$senderid') OR (receiver_id = '$senderid' AND sender_id = '$login_id')) ORDER BY timestamp ASC";
+            $result = $db->query($query);
+
+            if ($result->num_rows > 0) {
+
+                while($row = $result->fetch_assoc()){
+
+                    if($row["receiver_id"] == $login_id){
+                            
+                        $sender = $row["sender_id"];
+                        $query2 = "SELECT username FROM User WHERE userID = '$sender'";
+                        $result2 = $db->query($query2);
+                        $row2 = $result2->fetch_assoc();
+
+                        echo '<div class="row">
+                            <div class="col-md-12">
+                                <blockquote>
+                                    <p>'.$row["content"].'</p>
+                                    <footer>'.$row2["username"].' | Sent: '.$row["timestamp"].'</footer>
+                                </blockquote>
+                            </div>
+                        </div>';
+                    }
+
+                    else if($row["sender_id"] == $login_id){
+
+                        $sender = $row["sender_id"];
+                        $query2 = "SELECT username FROM User WHERE userID = '$sender'";
+                        $result2 = $db->query($query2);
+                        $row2 = $result2->fetch_assoc();
+
+                        echo '<div class="row">
+                            <div class="col-md-11 col-md-offset-1 col-xs-11 col-xs-offset-1">
+                                <blockquote>
+                                    <p>'.$row["content"].'</p>
+                                    <footer>'.$row2["username"].' | Sent: '.$row["timestamp"].'</footer>
+                                </blockquote>
+                            </div>
+                        </div>';
+                    }
+
+                }
+            } 
+        ?>
+
     </div>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Reply</h4>
-                <textarea class="input-lg">Put your message here</textarea>
+        <form action="" method="post">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>Reply</h4>
+                    <textarea class="input-lg" name="reply">Put your message here</textarea>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <button class="btn btn-success" type="button">Submit </button>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-success" type="submit" name="sendmessage">Submit </button>
+                </div>
             </div>
-        </div>
+        </form>
         <div class="row">
             <div class="col-md-2 col-md-offset-9 col-md-push-1">
                 <button class="btn btn-info active" type="button">Back to Inbox</button>
