@@ -13,6 +13,18 @@
     $profileinfo = $row['profile_info'];
     $dateofregistration = $row['date_of_registration'];
     $userlevel = $row['userlevel'];
+
+    if(isset($_POST["sendmessage"]))
+    {
+        if($userid != $login_id)
+        {
+            header("location: readmessage.php?id=$userid");
+        }
+        else
+        {
+            echo '<div class="alert alert-danger" role="alert">You cannot send message to yourself.</div>';
+        }
+    }
     
 ?>
 <html>
@@ -34,13 +46,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button><a class="navbar-brand navbar-link" href="#">CaseSwitchers </a></div>
+                </button><a class="navbar-brand navbar-link" href="index.php">CaseSwitchers </a></div>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li role="presentation"><a href="index.php">Home </a></li>
                     <li role="presentation"><a href="posts.php">Posts </a></li>
-                    <li role="presentation"><a href="#">Categories </a></li>
-                    <li role="presentation"><a href="#">Users </a></li>
+                    <li role="presentation"><a href="categories.php">Categories </a></li>
+                    <li role="presentation"><a href="users.php">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -73,16 +85,18 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-3">
-                        <button class="btn btn-success btn-sm" type="button">Message </button>
+                    <form method="post" action="">
+                        <button class="btn btn-success btn-sm" type="submit" name="sendmessage">Message</button>
+                    </form>
                     </div>
                     <div class="col-sm-3">
-                        <button class="btn btn-primary btn-sm" type="button">Settings </button>
+                        <a class="btn btn-primary btn-sm" type="button" href="profilesettings.php">Settings</a>
                     </div>
                     <div class="col-sm-3">
-                        <button class="btn btn-info btn-sm" type="button">Inbox </button>
+                        <a class="btn btn-info btn-sm" type="button" href="inbox.php">Inbox</a>
                     </div>
                     <div class="col-sm-3">
-                        <button class="btn btn-info btn-sm" type="button">Favorites </button>
+                        <a class="btn btn-info btn-sm" type="button" href="favorites.php">Favorites</a>
                     </div>
                 </div>
                 <div class="row">
@@ -110,7 +124,21 @@
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="list-group">
-                            <li class="list-group-item list-group-item-warning"><span>Rating: 5094</span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Rating: 
+                                <?php
+                                    $query2 = "SELECT * FROM Owns WHERE u_id = '$login_id'";
+                                    $result2 = $db->query($query2);
+                                    $totalrating = 0;
+                                    while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
+                                        $entryid = $row2["e_id"];
+                                        $query3 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$entryid' GROUP BY e_id";
+                                        $result3 = $db->query($query3);
+                                        $row3 = $result3->fetch_assoc();
+                                        $entryrating = $row3["entryrating"];
+                                        $totalrating = $totalrating + (int)$entryrating;
+                                    }
+                                    echo $totalrating;
+                                ?></span></li>
                             <li class="list-group-item list-group-item-warning"><span>Total Posts: 2</span></li>
                             <li class="list-group-item list-group-item-warning"><span>Total Comments: 83</span></li>
                             <li class="list-group-item list-group-item-warning"><span class="bg-info">User Level: <?php

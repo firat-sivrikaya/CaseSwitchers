@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+    include("session.php");
+
+?>
 <html>
 
 <head>
@@ -18,18 +21,29 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button><a class="navbar-brand navbar-link" href="#">CaseSwitchers </a></div>
+                </button><a class="navbar-brand navbar-link" href="index.php">CaseSwitchers </a></div>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
-                    <li role="presentation"><a href="#">Home </a></li>
-                    <li role="presentation"><a href="#">Posts </a></li>
-                    <li class="active" role="presentation"><a href="#">Categories </a></li>
-                    <li role="presentation"><a href="#">Users </a></li>
+                    <li role="presentation"><a href="index.php">Home </a></li>
+                    <li role="presentation"><a href="posts.php">Posts </a></li>
+                    <li class="active" role="presentation"><a href="categories.php">Categories </a></li>
+                    <li role="presentation"><a href="users.php">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li role="presentation"><a href="#">Profile </a></li>
+                <?php
+                    if(isset($_SESSION['admin']))
+                    {
+                        echo '<li role="presentation"><a href="adminpanel.php">Admin Panel </a></li>';
+                    }
+                    if(isset($_SESSION['login_user']))
+                    {
+                        echo '<li role="presentation"><a href="profile.php?id='.$login_id.'">Profile </a></li>';
+                        echo '<li role="presentation"><a href="logout.php">Logout </a></li>';
+                    }
+                ?>
                 </ul>
+
             </div>
         </div>
     </nav>
@@ -63,31 +77,33 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Algorithms </td>
-                                <td>266 </td>
-                            </tr>
-                            <tr>
-                                <td>Artificial Intelligence</td>
-                                <td>903 </td>
-                            </tr>
-                            <tr>
-                                <td>Blockchain </td>
-                                <td>231 </td>
-                            </tr>
-                            <tr>
-                                <td>General </td>
-                                <td>2344 </td>
-                            </tr>
-                            <tr>
-                                <td>Machine Learning</td>
-                                <td>685 </td>
-                            </tr>
-                            <tr>
-                                <td>User Experience</td>
-                                <td>331 </td>
-                            </tr>
-                            <tr></tr>
+                        <?php
+                            $query = "SELECT * FROM Category"; 
+                            $result = $db->query($query);
+                            
+                            
+                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                $categoryID = $row["ID"];
+                                $categoryname = $row["categoryname"];
+                                //Select owner ID from postID
+                                $query2 = "SELECT c_id, count(p_id) as postcount FROM PostCategory WHERE c_id = '$categoryID' GROUP BY c_id";
+                                $result2 = $db->query($query2);
+                                $row = $result2->fetch_assoc();
+                                $postcount = $row["postcount"];
+                                
+                                
+                                //Select rating from rates
+                                //todo
+                                
+                                //Select comments from comments
+                                //todo
+                               
+                                echo "<tr>";
+                                echo "<td>".$categoryname."</td>";
+                                echo "<td>".$postcount."</td>";
+                                echo "</tr>";
+                            }
+                        ?>
                         </tbody>
                     </table>
                 </div>

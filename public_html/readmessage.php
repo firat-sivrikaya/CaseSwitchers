@@ -36,17 +36,27 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button><a class="navbar-brand navbar-link" href="#">CaseSwitchers </a></div>
+                </button><a class="navbar-brand navbar-link" href="index.php">CaseSwitchers </a></div>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
-                    <li role="presentation"><a href="#">Home </a></li>
-                    <li role="presentation"><a href="#">Posts </a></li>
-                    <li role="presentation"><a href="#">Categories </a></li>
-                    <li role="presentation"><a href="#">Users </a></li>
+                    <li role="presentation"><a href="index.php">Home </a></li>
+                    <li role="presentation"><a href="posts.php">Posts </a></li>
+                    <li role="presentation"><a href="categories.php">Categories </a></li>
+                    <li role="presentation"><a href="users.php">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li role="presentation"><a href="#">Profile </a></li>
+                    <?php
+                        if(isset($_SESSION['admin']))
+                        {
+                            echo '<li role="presentation"><a href="adminpanel.php">Admin Panel </a></li>';
+                        }
+                        if(isset($_SESSION['login_user']))
+                        {
+                            echo '<li role="presentation"><a href="profile.php?id='.$login_id.'">Profile </a></li>';
+                            echo '<li role="presentation"><a href="logout.php">Logout </a></li>';
+                        }
+                    ?>
                 </ul>
             </div>
         </div>
