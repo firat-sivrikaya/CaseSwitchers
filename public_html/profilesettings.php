@@ -90,7 +90,10 @@
     {
         $name       = $_FILES['userphoto']['name']; 
         $ext = pathinfo($_FILES['userphoto']['name'], PATHINFO_EXTENSION);
-        $uploadfile = $uploaddir . basename($_FILES['userphoto']['name']);
+        $uploadfile = $uploaddir . $login_id . '.' . $ext;
+        $filename = $login_id . '.' . $ext;
+        $query = "UPDATE User SET avatarloc = '$filename' WHERE userID = $login_id";
+        $result = mysqli_query($db, $query);
         
         if (move_uploaded_file($_FILES['userphoto']['tmp_name'], $uploadfile)) {
             echo '<div class="alert alert-success" role="alert">Profile photo uploaded successfully. </div>';
