@@ -121,7 +121,7 @@
         </form>
         <div class="row">
             <div class="col-md-2 col-md-offset-9 col-md-push-1">
-                <button class="btn btn-info active" type="button">Back to Inbox</button>
+                <a class="btn btn-info active" type="button" href="inbox.php">Back to Inbox  </a>
             </div>
         </div>
     </div>

@@ -75,31 +75,40 @@
 								if(isset($_POST['Search'])){
 
 										$pattern = $_POST['Search'];
-										$query = "SELECT content, sender_id FROM Messages WHERE receiver_id = '$login_id' AND content LIKE '%$pattern%'";
+										$query = "SELECT * FROM Messages WHERE (receiver_id = '$login_id' OR sender_id = '$login_id') AND content LIKE '%$pattern%' ORDER BY timestamp DESC";
 								        $result = $db->query($query);
 
-			   							if ($result->num_rows > 0) {
+								        if(strlen($pattern) != 0){
+				   							if ($result->num_rows > 0) {
 
-										    while($row = $result->fetch_assoc()){
+											    while($row = $result->fetch_assoc()){
 
-										        $senderID = $row["sender_id"];
-					                        	$query2 = "SELECT username FROM User WHERE userID = '$senderID'";
-					   							$result2 = $db->query($query2);
-					   							$row2 = $result2->fetch_assoc();
+											    	if($row["sender_id"] == $login_id)
+											        	$userid = $row["receiver_id"];
+											        else
+											        	$userid = $row["sender_id"];
 
-										    	if(strlen($row["content"])>30){
-										    		$substrMsg = substr($row["content"],0,30);
-										        	echo '<td><a href="readmessage.php?id='.$senderID.'">'.$substrMsg.'...</td>'; 
-										    	}
-										    	
-										        else
-										        	echo '<td><a href="readmessage.php?id='.$senderID.'">'.$row["content"].'</td>';
+						                        	$query2 = "SELECT username FROM User WHERE userID = '$userid'";
+						   							$result2 = $db->query($query2);
+						   							$row2 = $result2->fetch_assoc();
 
-										        echo '<td>'.$row2["username"].'</td>';
-										        echo '</tr>';
+											    	if(strlen($row["content"])>30){
+											    		$substrMsg = substr($row["content"],0,30);
+											        	echo '<td><a href="readmessage.php?id='.$userid.'">'.$substrMsg.'...</td>'; 
+											    	}
+											    	
+											        else
+											        	echo '<td><a href="readmessage.php?id='.$userid.'">'.$row["content"].'</td>';
 
-										    }
-										} 		
+											        echo '<td>'.$row2["username"].'</td>';
+											        echo '</tr>';
+
+											    }
+											} 		
+									}
+
+									else
+										header("location: inbox.php");
 								}
 
 								else{
@@ -110,7 +119,7 @@
 						                    FROM Messages as m2
 						                    WHERE (m1.sender_id = m2.sender_id and m1.receiver_id = m2.receiver_id) or 
 						                           (m1.sender_id = m2.receiver_id and m1.receiver_id = m2.sender_id)    
-              							      ))sub ORDER BY timestamp DESC";
+              							      ))sub WHERE sender_id = '$login_id' or receiver_id = '$login_id' ORDER BY timestamp DESC";
 	   								$result = $db->query($query);
 
 		   							if ($result->num_rows > 0) {
