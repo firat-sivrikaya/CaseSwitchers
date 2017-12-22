@@ -31,4 +31,4 @@ We are a group of Junior / Senior CS students that are taking CS353 Database Sys
 ### Reports
 * [Project Proposal](https://github.com/DjCedrics/CaseSwitchers/raw/master/CS353%20Project%20Proposal.pdf)
 * [Design Report](https://github.com/DjCedrics/CaseSwitchers/raw/master/Design%20Report.pdf)
-* Final Report 
+* [Final Report](https://github.com/DjCedrics/CaseSwitchers/blob/master/Final%20Report.pdf)
