@@ -300,6 +300,7 @@
 	       		}
 
 	       		else{
+                    
 	       				$depth = $depth-1;
 	       				$offset = $offset+1;
 
@@ -316,12 +317,17 @@
 		       					$subowner = $row2["username"];
 
 		       				}
+                            
+                            $query3 = "SELECT e_id, sum(rating) as commentrating FROM Comment, Rates WHERE commentID = $subno AND e_id = commentID GROUP BY e_id";
+                            $result3 = $db->query($query3);
+                            $row3 = $result3->fetch_assoc();
+                            $commentrating = $row3["commentrating"];
 
 			            	echo '<div class="row" id="'.$subno.'">
 			            		<div class="col-md-'.$depth.' col-md-offset-'.$offset.' col-xs-'.$depth.' col-xs-offset-'.$offset.'">
 			              			<blockquote>
 				                    	<p>'.$subcontent.'</p>
-				                    	<footer>'.$subowner.' | Rating: 37</footer>
+				                    	<footer>'.$subowner.' | Rating: '.$commentrating.'</footer>
 					                </blockquote>
 					                <form method="post" action="">
 					                <button class="btn btn-success active" type="button" name="replypost" onmousedown="changeComment('.$subno.')">Reply </button>
@@ -352,6 +358,10 @@
 	       			$commentowner = $row2["username"];
 	       			$commentno = $row2["e_id"];
 	       		}
+                $query3 = "SELECT e_id, sum(rating) as commentrating FROM Comment, Rates WHERE commentID = $commentno AND e_id = commentID GROUP BY e_id";
+                $result3 = $db->query($query3);
+                $row3 = $result3->fetch_assoc();
+                $commentrating = $row3["commentrating"];
 
 	       		$depth = 12;
 	       		$offset = 1;
@@ -359,7 +369,7 @@
             		<div class="col-md-'.$depth.' col-md-offset-'.$offset.' col-xs-'.$depth.' col-xs-offset-'.$offset.'">
               			<blockquote>
 	                    	<p>'.$row["content"].'</p>
-	                    	<footer>'.$commentowner.' | Rating: 37</footer>
+	                    	<footer>'.$commentowner.' | Rating: '.$commentrating.'</footer>
 		                </blockquote>
 		                <form method="post" action="">
 		                <button class="btn btn-success active" type="button" name="replypost" onmousedown="changeComment('.$commentno.')">Reply </button>
