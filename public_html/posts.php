@@ -4,6 +4,15 @@
     $time = time();
     $atime = date('Y-m-d H:i:s',$time);
 
+    if(isset($_POST['selected_category']))
+    {
+        $selectedcategory = mysqli_real_escape_string($db, $_POST['selected_category']);
+        $query = "SELECT * FROM Category WHERE categoryname = '$selectedcategory'";
+        $result = $db->query($query);
+        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        $selectedcatid = $row["ID"];
+    }
+
     if(isset($_POST['submit_post'])){
 
         $postTitle = mysqli_real_escape_string($db, $_POST['post_title']);
@@ -144,7 +153,7 @@
                         </thead>
                         <tbody>
                         <?php
-                            $query = "SELECT * FROM Post"; 
+                            $query = "SELECT * FROM Post, Entry WHERE postID = entryID ORDER BY creationdate DESC"; 
                             $result = $db->query($query);
                             
                             
@@ -211,11 +220,11 @@
             </div>
         </div>
     </div>
-    <div class="container">
+    <!---<div class="container">
         <div class="row">
             <div class="col-sm-2"><a class="btn btn-success" role="button" href="#">New Post</a></div>
         </div>
-    </div>
+    </div>-->
     <div class="container">
     <form method="post" action="">
         <div class="row">
@@ -228,14 +237,18 @@
                     </li>
                     <li class="list-group-item">
                         <label>Select Category</label>
-                        <select name="selected_category" id="select_subcategory">
-                            <optgroup label="This is a group">
+                        <select name="selected_category" id="select_subcategory" onchange='this.form.submit()'>
+                            <optgroup label="Categories">
+                                <option style="color: black">Select a category</option>
                                 <?php
                                     $query = "SELECT categoryname FROM Category";
                                     $result = $db->query($query);
                                     while($row = $result->fetch_assoc()){
                                         $name = $row['categoryname'];
-                                        echo '<option name='.$name.' value='.$name.' style="color: black">'.$name.'</option>';
+                                        echo '<option name='.$name.' value='.$name.' style="color: black" ';
+                                        if(isset($_POST['selected_category']) && $_POST['selected_category'] == $name) 
+                                            echo 'selected= "selected"';
+                                        echo ">$name</option>";
                                     }
                                     $parent_category = $name;
                                 ?>
@@ -245,9 +258,9 @@
                     <li class="list-group-item">
                         <label>Select Subcategory</label>
                             <select name="selected_subcategory">
-                                <optgroup label="This is a group">
+                                <optgroup label="Subcategories">
                                     <?php
-                                        $query = "SELECT subcategoryname FROM Subcategory";
+                                        $query = "SELECT subcategoryname FROM Subcategory WHERE c_id = $selectedcatid";
                                         $result = $db->query($query);
                                         while($row = $result->fetch_assoc()){
                                             $name = $row['subcategoryname'];
@@ -265,7 +278,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <button class="btn btn-success" name="submit_post" type="submit">Submit </button>
+                <button class="btn btn-success" name="submit_post" type="submit">Submit </button></form>
             </div>
         </div>
     </form>

@@ -257,6 +257,14 @@
                         $entryrating = $row6["entryrating"];
                         echo $entryrating;
                     ?></span></li>
+                    <li class="list-group-item list-group-item-info"><span>Subcategory: 
+                    <?php
+                        $query7 = "SELECT subcategoryname FROM Subcategory s, PostCategory p WHERE p.p_id = $postid AND p.c_id = s.c_id";
+                        $result7 = $db->query($query7);
+                        $row7 = $result7->fetch_assoc();
+                        $subcategoryname = $row7["subcategoryname"];
+                        echo $subcategoryname;
+                    ?></span></li>
                 </ul>
             </div>
         </div>
@@ -309,7 +317,7 @@
 
 		       				}
 
-			            	echo '<div class="row">
+			            	echo '<div class="row" id="'.$subno.'">
 			            		<div class="col-md-'.$depth.' col-md-offset-'.$offset.' col-xs-'.$depth.' col-xs-offset-'.$offset.'">
 			              			<blockquote>
 				                    	<p>'.$subcontent.'</p>

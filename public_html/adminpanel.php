@@ -229,8 +229,8 @@
                 <ul class="nav navbar-nav">
                     <li role="presentation"><a href="index.php">Home </a></li>
                     <li role="presentation"><a href="posts.php">Posts </a></li>
-                    <li role="presentation"><a href="#">Categories </a></li>
-                    <li role="presentation"><a href="#">Users </a></li>
+                    <li role="presentation"><a href="categories.php">Categories </a></li>
+                    <li role="presentation"><a href="users.php">Users </a></li>
                     <li role="presentation"></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -261,11 +261,46 @@
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="list-group">
-                            <li class="list-group-item list-group-item-warning"><span>Total Posts: 12903</span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total Comments: 45940</span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total Categories: 23</span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total SubCategories: 53</span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total Users: 65038</span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Posts: 
+                            <?php 
+                                $query= "SELECT count(postID) as postcount FROM Post";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $postcount = $row["postcount"];
+                                echo $postcount;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Comments: 
+                            <?php 
+                                $query= "SELECT count(commentID) as commentcount FROM Comment";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $commentcount = $row["commentcount"];
+                                echo $commentcount;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Categories: 
+                            <?php 
+                                $query= "SELECT count(ID) as categorycount FROM Category";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $categorycount = $row["categorycount"];
+                                echo $categorycount;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total SubCategories: 
+                            <?php 
+                                $query= "SELECT count(sub_id) as subcount FROM Subcategory";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $subcount = $row["subcount"];
+                                echo $subcount;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Users: 
+                            <?php 
+                                $query= "SELECT count(userID) as usercount FROM User";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $usercount = $row["usercount"];
+                                echo $usercount;
+                            ?></span></li>
                         </ul>
                     </div>
                 </div>

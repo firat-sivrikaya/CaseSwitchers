@@ -126,7 +126,7 @@
                         <ul class="list-group">
                             <li class="list-group-item list-group-item-warning"><span>Rating: 
                                 <?php
-                                    $query2 = "SELECT * FROM Owns WHERE u_id = '$login_id'";
+                                    $query2 = "SELECT * FROM Owns WHERE u_id = '$userid'";
                                     $result2 = $db->query($query2);
                                     $totalrating = 0;
                                     while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
@@ -139,8 +139,22 @@
                                     }
                                     echo $totalrating;
                                 ?></span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total Posts: 2</span></li>
-                            <li class="list-group-item list-group-item-warning"><span>Total Comments: 83</span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Posts: 
+                            <?php 
+                                $query = "SELECT u_id, count(e_id) as postcount FROM Owns, Post WHERE e_id = postID AND u_id = $userid GROUP BY u_id";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $postcount = $row["postcount"];
+                                echo $postcount;   
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Total Comments: 
+                            <?php 
+                                $query = "SELECT u_id, count(e_id) as commentcount FROM Owns, Comment WHERE e_id = commentID AND u_id = $userid GROUP BY u_id";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $commentcount = $row["commentcount"];
+                                echo $commentcount;   
+                            ?></span></li>
                             <li class="list-group-item list-group-item-warning"><span class="bg-info">User Level: <?php
                                 echo $userlevel;
                             ?></span></li>
@@ -157,15 +171,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Hello Caseswitchers, I am Elon Musk. AMA!</td>
-                            </tr>
-                            <tr>
-                                <td>The Boring Company</td>
-                            </tr>
-                            <tr>
-                                <td><em>- NOT FOUND - </em></td>
-                            </tr>
+                        <?php
+                            $query = "SELECT * FROM Owns, Entry, Post WHERE u_id = $userid AND e_id = entryID AND postID = entryID ORDER BY creationdate DESC LIMIT 3";
+                            $result = $db->query($query);
+                            while($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
+                            {
+                                $topicname = $row["topicname"];
+                                $entryid = $row["e_id"];
+                                echo '<tr><td><a href="showpost.php?id='.$entryid.'">'.$topicname.'</a></td></tr>';
+                            }
+                            
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -177,15 +193,40 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>I agree with your opinion about this topic, however...</td>
-                            </tr>
-                            <tr>
-                                <td>Nice! </td>
-                            </tr>
-                            <tr>
-                                <td>Could you clarify your argument a little bit more please?</td>
-                            </tr>
+                            
+                        <?php
+                            $query = "SELECT * FROM Owns, Entry, Comment WHERE u_id = $userid AND e_id = entryID AND commentID = entryID ORDER BY creationdate DESC LIMIT 3";
+                            $result = $db->query($query);
+                            while($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
+                            {
+                                $commentcontent = $row["content"];
+                                $commentid = $row["e_id"];
+                                $subcommentid = $row["e_id"];
+                                findparent:
+                                $query2 = "SELECT * FROM PostComments WHERE c_id = $commentid";
+                                $result2 = $db->query($query2);
+                                if( mysqli_num_rows($result2)==0)
+                                {
+                                    $query3 = "SELECT * FROM SubComments WHERE subcomment_id = $commentid";
+                                    $result3 = $db->query($query3);
+                                    if(mysqli_num_rows($result3) == 0)
+                                    {
+                                        goto findparent;  
+                                    }
+                                    else
+                                    {
+                                        $row = mysqli_fetch_array($result3, MYSQLI_ASSOC);
+                                        $commentid = $row["comment_id"];
+                                        goto findparent;                                       
+                                    }
+
+                                }
+                                $row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
+                                $linkedpost = $row2["p_id"];
+                                echo '<tr><td><a href="showpost.php?id='.$linkedpost.'#'.$subcommentid.'">'.$commentcontent.'</a></td></tr>';
+                            }
+                            
+                        ?>
                         </tbody>
                     </table>
                 </div>
