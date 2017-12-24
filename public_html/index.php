@@ -57,7 +57,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div class="jumbotron"><img class="img-responsive" src="assets/img/logo_without_background.png">
+                <div class="jumbotron"><img class="img-responsive" style="text-align:center;width:100%;display:block;margin:auto;" src="assets/img/logo_without_background.png">
                     <p class="text-center">A hypertext dictionary for CS enthusiasts</p>
                     <p class="text-center"><a class="btn btn-primary btn-lg" role="button" href="login.php">Login</a><a class="btn btn-info btn-lg" role="button" href="signup.php">Signup </a></p>
                 </div>
