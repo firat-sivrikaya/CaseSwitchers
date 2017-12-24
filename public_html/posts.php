@@ -194,6 +194,11 @@
                                 $row6 = $result6->fetch_assoc();
                                 $entryrating = $row6["entryrating"];
                                 
+                                // Get comment count
+                                $query2 = "SELECT count(c_id) as commentcount FROM PostComments WHERE p_id = $postid GROUP BY p_id";
+                                $result2 = $db->query($query2);
+                                $row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
+                                $commentcount = $row2["commentcount"];
                                 
                                 
                                 //Select rating from rates
@@ -209,7 +214,7 @@
                                 echo '<td><a href="showpost.php?id='.$postid.'">'.$posttitle.'</a></td>';
                                 echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
                                 echo "<td>".$entryrating."</td>";
-                                echo '<td>0</td>';
+                                echo '<td>'.$commentcount.'</td>';
                                 echo '<td>'.$postcategoryname.'</td>';
                                 echo "</tr>";
                             }
