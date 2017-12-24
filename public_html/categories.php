@@ -55,12 +55,14 @@
         <div class="row">
             <div class="col-sm-3 col-sm-offset-9">
                 <div class="row">
+                <form method="post" action="">
                     <div class="col-sm-8 col-sm-pull-1">
-                        <input type="search" name="Search" value="Search" disabled="">
+                        <input type="search" name="Search" placeholder="Search">
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-default btn-sm" type="button">Search </button>
+                        <button class="btn btn-default btn-sm" type="submit">Search </button>
                     </div>
+                </form>
                 </div>
             </div>
         </div>
@@ -78,31 +80,68 @@
                         </thead>
                         <tbody>
                         <?php
-                            $query = "SELECT * FROM Category"; 
-                            $result = $db->query($query);
+                                if(isset($_POST['Search']))
+                                {
+                                    $pattern = $_POST['Search'];
+                                    $query = "SELECT * FROM Category WHERE categoryname LIKE '%$pattern%'";
+                                    $result = $db->query($query);
+
+                                    if(strlen($pattern) != 0)
+                                    {
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $categoryID = $row["ID"];
+                                            $categoryname = $row["categoryname"];
+                                            //Select owner ID from postID
+                                            $query2 = "SELECT c_id, count(p_id) as postcount FROM PostCategory WHERE c_id = '$categoryID' GROUP BY c_id";
+                                            $result2 = $db->query($query2);
+                                            $row2 = $result2->fetch_assoc();
+                                            $postcount = $row2["postcount"];
+
+
+                                            //Select rating from rates
+                                            //todo
+
+                                            //Select comments from comments
+                                            //todo
+
+                                            echo "<tr>";
+                                            echo '<td><a href="categoryposts.php?id='.$categoryID.'">'.$categoryname.'</a></td>';
+                                            echo "<td>".$postcount."</td>";
+                                            echo "</tr>";
+                                        } 
+                                    }
+                                    else
+                                        header("location: categories.php");
+                                }
                             
-                            
-                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                                $categoryID = $row["ID"];
-                                $categoryname = $row["categoryname"];
-                                //Select owner ID from postID
-                                $query2 = "SELECT c_id, count(p_id) as postcount FROM PostCategory WHERE c_id = '$categoryID' GROUP BY c_id";
-                                $result2 = $db->query($query2);
-                                $row = $result2->fetch_assoc();
-                                $postcount = $row["postcount"];
-                                
-                                
-                                //Select rating from rates
-                                //todo
-                                
-                                //Select comments from comments
-                                //todo
-                               
-                                echo "<tr>";
-                                echo '<td><a href="categoryposts.php?id='.$categoryID.'">'.$categoryname.'</a></td>';
-                                echo "<td>".$postcount."</td>";
-                                echo "</tr>";
-                            }
+                                else
+                                {
+                                    $query = "SELECT * FROM Category"; 
+                                    $result = $db->query($query);
+
+
+                                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        $categoryID = $row["ID"];
+                                        $categoryname = $row["categoryname"];
+                                        //Select owner ID from postID
+                                        $query2 = "SELECT c_id, count(p_id) as postcount FROM PostCategory WHERE c_id = '$categoryID' GROUP BY c_id";
+                                        $result2 = $db->query($query2);
+                                        $row = $result2->fetch_assoc();
+                                        $postcount = $row["postcount"];
+
+
+                                        //Select rating from rates
+                                        //todo
+
+                                        //Select comments from comments
+                                        //todo
+
+                                        echo "<tr>";
+                                        echo '<td><a href="categoryposts.php?id='.$categoryID.'">'.$categoryname.'</a></td>';
+                                        echo "<td>".$postcount."</td>";
+                                        echo "</tr>";
+                                    }    
+                                }
                         ?>
                         </tbody>
                     </table>
