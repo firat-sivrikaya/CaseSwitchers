@@ -13,26 +13,40 @@ if(isset($_POST['register']))
     }
 
     else{
-      $query = mysqli_query($db,"SELECT * FROM user WHERE username = '$_POST[username]'") or die(mysqli_error($db));
-
-      if(!$row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
           $userName = mysqli_real_escape_string($db,$_POST['username']);
-          $email = mysqli_real_escape_string($db,$_POST['email']);
-          $password =  mysqli_real_escape_string($db,$_POST['password']);
-          $passwordRepeat = mysqli_real_escape_string($db,$_POST['repassword']);
-          $userlevel = "Beginner";
-          $query = "INSERT INTO User (username,password,email, userlevel) VALUES ('$userName', '$password', '$email', '$userlevel')";
-          $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-          if($data)
+          // Perform username duplicate check
+          $query= "SELECT * FROM User WHERE username = '$userName'";
+          $result = mysqli_query($db, $query);
+          $count = mysqli_num_rows($result);
+          if( $count == 1 )
           {
-            echo '<div class="alert alert-success" role="alert">You registered successfully. Please log in with your details.</div>';
-            $_SESSION['user'] = $userName;
+              echo '<div class="alert alert-danger" role="alert">Username already exists.</div>';
           }
-      }
-
-      else{
-        echo '<div class="alert alert-danger" role="alert">Username is already taken.</div>';
-      }   
+          else
+          {
+              $email = mysqli_real_escape_string($db,$_POST['email']);
+              // Perform email duplicate check
+              $query = "SELECT * FROM User WHERE email = '$email'";
+              $result = mysqli_query($db, $query);
+              $count = mysqli_num_rows($result);
+              if ( $count == 1 )
+              {
+                  echo '<div class="alert alert-danger" role="alert">A user account with the given email address already exists.</div>';
+              }
+              else
+              {
+                  $password =  mysqli_real_escape_string($db,$_POST['password']);
+                  $passwordRepeat = mysqli_real_escape_string($db,$_POST['repassword']);
+                  $userlevel = "Beginner";
+                  $query = "INSERT INTO User (username,password,email, userlevel) VALUES ('$userName', '$password', '$email', '$userlevel')";
+                  $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+                  if($data)
+                  {
+                    echo '<div class="alert alert-success" role="alert">You registered successfully. Please log in with your details.</div>';
+                    $_SESSION['user'] = $userName;
+                  }              
+              }              
+          }  
 
     }
 
