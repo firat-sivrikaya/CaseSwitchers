@@ -55,12 +55,14 @@
         <div class="row">
             <div class="col-sm-3 col-sm-offset-9">
                 <div class="row">
+                <form method="post" action="">
                     <div class="col-sm-8 col-sm-pull-1">
-                        <input type="search" name="Search" value="Search">
+                        <input type="search" name="Search" placeholder="Search">
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-default btn-sm" type="button">Search </button>
+                        <button class="btn btn-default btn-sm" type="submit">Search </button>
                     </div>
+                </form>
                 </div>
             </div>
         </div>
@@ -78,38 +80,85 @@
                         </thead>
                         <tbody>
                         <?php
-                            $query = "SELECT * FROM User"; 
-                            $result = $db->query($query);
+
+                            if(isset($_POST['Search'])){
+
+                                $pattern = $_POST['Search'];
+                                $query = "SELECT * FROM User WHERE username LIKE '%$pattern%'";
+                                $result = $db->query($query);
                             
-                            
-                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                                $username = $row["username"];
-                                $userid = $row["userID"];
-                                
-                                
-                                //Select owner ID from postID
-                                $query2 = "SELECT * FROM Owns WHERE u_id = '$userid'";
-                                $result2 = $db->query($query2);
-                                $totalrating = 0;
-                                while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
-                                    $entryid = $row2["e_id"];
-                                    $query3 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$entryid'";
-                                    $result3 = $db->query($query3);
-                                    $row3 = $result3->fetch_assoc();
-                                    $entryrating = $row3["entryrating"];
-                                    $totalrating = $totalrating + (int)$entryrating;
+                                if(strlen($pattern) != 0){
+                                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        $username = $row["username"];
+                                        $userid = $row["userID"];
+                                        
+                                        
+                                        //Select owner ID from postID
+                                        $query2 = "SELECT * FROM Owns WHERE u_id = '$userid'";
+                                        $result2 = $db->query($query2);
+                                        $totalrating = 0;
+                                        while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
+                                            $entryid = $row2["e_id"];
+                                            $query3 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$entryid'";
+                                            $result3 = $db->query($query3);
+                                            $row3 = $result3->fetch_assoc();
+                                            $entryrating = $row3["entryrating"];
+                                            $totalrating = $totalrating + (int)$entryrating;
+                                        }
+                                        
+                                        //Select rating from rates
+                                        //todo
+                                        
+                                        //Select comments from comments
+                                        //todo
+                                       
+                                        echo "<tr>";
+                                        echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
+                                        echo "<td>".$totalrating."</td>";
+                                        echo "</tr>";
+
+                                    }
                                 }
+
+                                else
+                                    header("location: users.php");
+                            }
+
+                            else{
+                                $query = "SELECT * FROM User"; 
+                                $result = $db->query($query);
                                 
-                                //Select rating from rates
-                                //todo
                                 
-                                //Select comments from comments
-                                //todo
-                               
-                                echo "<tr>";
-                                echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
-                                echo "<td>".$totalrating."</td>";
-                                echo "</tr>";
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                    $username = $row["username"];
+                                    $userid = $row["userID"];
+                                    
+                                    
+                                    //Select owner ID from postID
+                                    $query2 = "SELECT * FROM Owns WHERE u_id = '$userid'";
+                                    $result2 = $db->query($query2);
+                                    $totalrating = 0;
+                                    while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
+                                        $entryid = $row2["e_id"];
+                                        $query3 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$entryid'";
+                                        $result3 = $db->query($query3);
+                                        $row3 = $result3->fetch_assoc();
+                                        $entryrating = $row3["entryrating"];
+                                        $totalrating = $totalrating + (int)$entryrating;
+                                    }
+                                    
+                                    //Select rating from rates
+                                    //todo
+                                    
+                                    //Select comments from comments
+                                    //todo
+                                   
+                                    echo "<tr>";
+                                    echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
+                                    echo "<td>".$totalrating."</td>";
+                                    echo "</tr>";
+
+                            }
                             }
                         ?>
                         </tbody>

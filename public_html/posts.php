@@ -3,7 +3,6 @@
     date_default_timezone_set('Europe/Istanbul');
     $time = time();
     $atime = date('Y-m-d H:i:s',$time);
-
     if(isset($_POST['selected_category']))
     {
         $selectedcategory = mysqli_real_escape_string($db, $_POST['selected_category']);
@@ -12,45 +11,33 @@
         $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
         $selectedcatid = $row["ID"];
     }
-
     if(isset($_POST['submit_post'])){
-
         $postTitle = mysqli_real_escape_string($db, $_POST['post_title']);
         $category = mysqli_real_escape_string($db, $_POST['selected_category']);
         $subCategory = mysqli_real_escape_string($db, $_POST['selected_subcategory']);
         $postContent = mysqli_real_escape_string($db, $_POST['post_content']);
-
         $query = "INSERT INTO Entry (creationdate, content) VALUES ('$atime', '$postContent')";
         $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-
         $query = "SELECT entryID FROM Entry WHERE creationdate = '$atime' AND content = '$postContent'"; 
         $result = $db->query($query);
-
         while($row = $result->fetch_assoc()){
             $entryID = $row["entryID"]; 
         }
-
         $query = "SELECT userID FROM User WHERE username = '$login_session'"; 
         $result = $db->query($query);
-
         while($row = $result->fetch_assoc()){
             $userID = $row["userID"]; 
         }
-
         $query = "INSERT INTO Post VALUES ($entryID, '$postTitle')";
         $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-
         
         $query = "INSERT INTO Owns VALUES ($entryID, $userID)";
         $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-
-
         $query = "SELECT ID, categoryname FROM Category WHERE categoryname = '$category'"; 
         $result = $db->query($query);
         $row = $result->fetch_assoc();
         $categoryID = $row["ID"]; 
         $categoryname = $row['categoryname'];
-
         $query = "SELECT sub_id, subcategoryname FROM subcategory WHERE subcategoryname = '$subCategory'"; 
         $result = $db->query($query);
         $row = $result->fetch_assoc();
@@ -62,8 +49,6 @@
             // Check if subcategory belongs to category. Act accordingly.
             echo '<div class="alert alert-danger" role="alert">Subcategory '.$subcategoryname.' does not belong to '.$categoryname.'. Please choose the correct category. </div>'; 
         }
-
-
         $query = "INSERT INTO PostCategory VALUES ($entryID, $categoryID, $subcategoryID)";
         $data = mysqli_query ($db,$query)or die(mysqli_error($db));
         
@@ -71,7 +56,6 @@
         {
             echo '<div class="alert alert-success" role="alert">Your post has been submitted!</div>'; 
         }
-
     }
 ?>
 <html>
@@ -127,12 +111,14 @@
         <div class="row">
             <div class="col-sm-3 col-sm-offset-9">
                 <div class="row">
+                <form method="post" action="">
                     <div class="col-sm-8 col-sm-pull-1">
-                        <input type="search" name="Search" value="Search">
+                        <input type="search" name="Search" placeholder="" ="Search">
                     </div>
                     <div class="col-sm-4">
-                        <button class="btn btn-default btn-sm" type="button">Search </button>
+                        <button class="btn btn-default btn-sm" type="Submit">Search </button>
                     </div>
+                </form>
                 </div>
             </div>
         </div>
@@ -153,70 +139,145 @@
                         </thead>
                         <tbody>
                         <?php
-                            $query = "SELECT * FROM Post, Entry WHERE postID = entryID ORDER BY creationdate DESC"; 
-                            $result = $db->query($query);
-                            
-                            
-                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                                $postid = $row["postID"];
-                                $posttitle = $row["topicname"];
-                                //Select owner ID from postID
-                                $query2 = "SELECT * FROM Owns WHERE e_id = '$postid'";
-                                $result2 = $db->query($query2);
-                                $row = $result2->fetch_assoc();
-                                $postownerid = $row["u_id"];
-                                
-                                //Select username from owner ID
-                                $query3 = "SELECT * FROM User WHERE userID = '$postownerid'";
-                                $result3 = $db->query($query3);
-                                $row = $result3->fetch_assoc();
-                                $postownername = $row['username'];
-                                
-                                //Select category id from postID
-                                $query4 = "SELECT * FROM Postcategory WHERE p_id = '$postid'";
-                                $result4 = $db->query($query4);
-                                $row = $result4->fetch_assoc();
-                                $postcategoryid = $row['c_id'];
-                                
-                                //Select category name from category ID
-                                $query5 = "SELECT * FROM Category WHERE ID='$postcategoryid'";
-                                $result5 = $db->query($query5);
-                                $row = $result5->fetch_assoc();
-                                $postcategoryname = $row['categoryname'];
-                                
-                                //Select rating from rates
-                                //todo
 
-                                //Select owner ID from postID
-                                
-                                $query6 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$postid' GROUP BY e_id";
-                                $result6 = $db->query($query6);
-                                $row6 = $result6->fetch_assoc();
-                                $entryrating = $row6["entryrating"];
-                                
-                                // Get comment count
-                                $query2 = "SELECT count(c_id) as commentcount FROM PostComments WHERE p_id = $postid GROUP BY p_id";
-                                $result2 = $db->query($query2);
-                                $row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
-                                $commentcount = $row2["commentcount"];
-                                
-                                
-                                //Select rating from rates
-                                //todo
-                                
-                                //Select comments from comments
-                                //todo
-                                
-                                //Select comments from comments
-                                //todo
-                               
-                                echo "<tr>";
-                                echo '<td><a href="showpost.php?id='.$postid.'">'.$posttitle.'</a></td>';
-                                echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
-                                echo "<td>".$entryrating."</td>";
-                                echo '<td>'.$commentcount.'</td>';
-                                echo '<td>'.$postcategoryname.'</td>';
-                                echo "</tr>";
+                            if(isset($_POST['Search'])){
+
+                                $pattern = $_POST['Search'];
+                                $query = "SELECT * FROM Post, Entry WHERE (postID = entryID AND topicname LIKE '%$pattern%') ORDER BY creationdate DESC"; 
+                                $result = $db->query($query);
+                                            
+                                if(strlen($pattern) != 0){             
+                                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        $postid = $row["postID"];
+                                        $posttitle = $row["topicname"];
+                                        //Select owner ID from postID
+                                        $query2 = "SELECT * FROM Owns WHERE e_id = '$postid'";
+                                        $result2 = $db->query($query2);
+                                        $row = $result2->fetch_assoc();
+                                        $postownerid = $row["u_id"];
+                                        
+                                        //Select username from owner ID
+                                        $query3 = "SELECT * FROM User WHERE userID = '$postownerid'";
+                                        $result3 = $db->query($query3);
+                                        $row = $result3->fetch_assoc();
+                                        $postownername = $row['username'];
+                                        
+                                        //Select category id from postID
+                                        $query4 = "SELECT * FROM Postcategory WHERE p_id = '$postid'";
+                                        $result4 = $db->query($query4);
+                                        $row = $result4->fetch_assoc();
+                                        $postcategoryid = $row['c_id'];
+                                        
+                                        //Select category name from category ID
+                                        $query5 = "SELECT * FROM Category WHERE ID='$postcategoryid'";
+                                        $result5 = $db->query($query5);
+                                        $row = $result5->fetch_assoc();
+                                        $postcategoryname = $row['categoryname'];
+                                        
+                                        //Select rating from rates
+                                        //todo
+                                        //Select owner ID from postID
+                                        
+                                        $query6 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$postid' GROUP BY e_id";
+                                        $result6 = $db->query($query6);
+                                        $row6 = $result6->fetch_assoc();
+                                        $entryrating = $row6["entryrating"];
+                                        
+                                        // Get comment count
+                                        $query2 = "SELECT count(c_id) as commentcount FROM PostComments WHERE p_id = $postid GROUP BY p_id";
+                                        $result2 = $db->query($query2);
+                                        $row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
+                                        $commentcount = $row2["commentcount"];
+                                        
+                                        
+                                        //Select rating from rates
+                                        //todo
+                                        
+                                        //Select comments from comments
+                                        //todo
+                                        
+                                        //Select comments from comments
+                                        //todo
+                                       
+                                        echo "<tr>";
+                                        echo '<td><a href="showpost.php?id='.$postid.'">'.$posttitle.'</a></td>';
+                                        echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
+                                        echo "<td>".$entryrating."</td>";
+                                        echo '<td>'.$commentcount.'</td>';
+                                        echo '<td>'.$postcategoryname.'</td>';
+                                        echo "</tr>";
+
+                                    }
+                                }
+                                    else
+                                        header("location: posts.php");
+                            }
+
+                            else{
+
+                                $query = "SELECT * FROM Post, Entry WHERE postID = entryID ORDER BY creationdate DESC"; 
+                                $result = $db->query($query);
+                                                         
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                    $postid = $row["postID"];
+                                    $posttitle = $row["topicname"];
+                                    //Select owner ID from postID
+                                    $query2 = "SELECT * FROM Owns WHERE e_id = '$postid'";
+                                    $result2 = $db->query($query2);
+                                    $row = $result2->fetch_assoc();
+                                    $postownerid = $row["u_id"];
+                                    
+                                    //Select username from owner ID
+                                    $query3 = "SELECT * FROM User WHERE userID = '$postownerid'";
+                                    $result3 = $db->query($query3);
+                                    $row = $result3->fetch_assoc();
+                                    $postownername = $row['username'];
+                                    
+                                    //Select category id from postID
+                                    $query4 = "SELECT * FROM Postcategory WHERE p_id = '$postid'";
+                                    $result4 = $db->query($query4);
+                                    $row = $result4->fetch_assoc();
+                                    $postcategoryid = $row['c_id'];
+                                    
+                                    //Select category name from category ID
+                                    $query5 = "SELECT * FROM Category WHERE ID='$postcategoryid'";
+                                    $result5 = $db->query($query5);
+                                    $row = $result5->fetch_assoc();
+                                    $postcategoryname = $row['categoryname'];
+                                    
+                                    //Select rating from rates
+                                    //todo
+                                    //Select owner ID from postID
+                                    
+                                    $query6 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$postid' GROUP BY e_id";
+                                    $result6 = $db->query($query6);
+                                    $row6 = $result6->fetch_assoc();
+                                    $entryrating = $row6["entryrating"];
+                                    
+                                    // Get comment count
+                                    $query2 = "SELECT count(c_id) as commentcount FROM PostComments WHERE p_id = $postid GROUP BY p_id";
+                                    $result2 = $db->query($query2);
+                                    $row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
+                                    $commentcount = $row2["commentcount"];
+                                    
+                                    
+                                    //Select rating from rates
+                                    //todo
+                                    
+                                    //Select comments from comments
+                                    //todo
+                                    
+                                    //Select comments from comments
+                                    //todo
+                                   
+                                    echo "<tr>";
+                                    echo '<td><a href="showpost.php?id='.$postid.'">'.$posttitle.'</a></td>';
+                                    echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
+                                    echo "<td>".$entryrating."</td>";
+                                    echo '<td>'.$commentcount.'</td>';
+                                    echo '<td>'.$postcategoryname.'</td>';
+                                    echo "</tr>";
+                                }
                             }
                         ?>
                         </tbody>
