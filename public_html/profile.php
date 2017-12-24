@@ -211,19 +211,21 @@
                             $result = $db->query($query);
                             while($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
                             {
+                                $over = 0;
                                 $commentcontent = $row["content"];
                                 $commentid = $row["e_id"];
                                 $subcommentid = $row["e_id"];
                                 findparent:
                                 $query2 = "SELECT * FROM PostComments WHERE c_id = $commentid";
                                 $result2 = $db->query($query2);
-                                if( mysqli_num_rows($result2)==0)
+                                if( mysqli_num_rows($result2)==0 && $over == 0)
                                 {
                                     $query3 = "SELECT * FROM SubComments WHERE subcomment_id = $commentid";
                                     $result3 = $db->query($query3);
                                     if(mysqli_num_rows($result3) == 0)
                                     {
-                                        goto findparent;  
+                                        goto findparent;
+                                        $over = 1; // handle the case in which there are no subcomments
                                     }
                                     else
                                     {
