@@ -109,53 +109,33 @@
                                     echo '<td><a href="showpost.php?id='.$favpostid.'">'.$favpostname.'</a></td>';
                                     echo "<td>".$ownername."</td>";
                                     echo "<td>".$postrating."</td>";
-                                    echo '<form method="post" action=""><td><button class="btn btn-danger" type="submit" name="unfavoritepost">Unfavorite</button><input type="hidden" value="'.$favpostid.'" name="unfavpostid"></form></td>';                                    
+                                    echo '<form method="post" action=""><td><button class="btn btn-danger" type="submit" name="unfavoritepost">Unfavorite</button><input type="hidden" value="'.$favpostid.'" name="unfavpostid"></form></td></tr>';                                    
+                                }
+                                
+                                $query7 = "SELECT * FROM Entry, Comment WHERE entryID = $favoriteid AND entryID = commentID";
+                                $result7 = $db->query($query7);
+                                while($row7 = mysqli_fetch_array($result7, MYSQLI_ASSOC))
+                                {
+                                    $favcommentname = $row7["content"];
+                                    $favcommentid = $row7["entryID"];
+                                    $query3 = "SELECT * FROM Owns NATURAL JOIN User WHERE e_id = $favpostid";
+                                    $result3 = $db->query($query3);
+                                    $row3 = mysqli_fetch_array($result3, MYSQLI_ASSOC);
+                                    $ownername = $row3["username"];
+                                    
+                                    $query4= "SELECT e_id, sum(rating) as totalrating FROM Rates WHERE e_id = $favcommentid GROUP BY e_id";
+                                    $result4= $db->query($query4);
+                                    $row4= mysqli_fetch_array($result4, MYSQLI_ASSOC);
+                                    $commentrating = $row4["totalrating"];
+                                    
+                                    echo "<tr>";
+                                    echo '<td><a href="showpost.php?id='.$favpostid.'#'.$favcommentid.'">'.$favcommentname.'</a></td>';
+                                    echo "<td>".$ownername."</td>";
+                                    echo "<td>".$commentrating."</td>";
+                                    echo '<form method="post" action=""><td><button class="btn btn-danger" type="submit" name="unfavoritepost">Unfavorite</button><input type="hidden" value="'.$favcommentid.'" name="unfavpostid"></form></td></tr>';     
                                 }
                             }
                         ?>
-                            <tr>
-                                <td>Explain Blockchain in 3 words</td>
-                                <td>cspro </td>
-                                <td>55 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>Future of Cryptocurrencies</td>
-                                <td>jack30 </td>
-                                <td>43 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>By 2040, There Will Be No World Without Bitcoin</td>
-                                <td>h4x0r </td>
-                                <td>55 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>Bitcoin will hit $10.000 by the end of 2017</td>
-                                <td>aug30 </td>
-                                <td>11 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>I've invested more than $100.000 in Bitcoin, AMA!</td>
-                                <td>kevin17 </td>
-                                <td>378 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>The Lightning Network</td>
-                                <td>cryptoislove </td>
-                                <td>389 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr>
-                                <td>Most profitable altcoins</td>
-                                <td>chocho03 </td>
-                                <td>77 </td>
-                                <td> <a class="btn btn-danger" role="button" href="#">Unfavorite </a></td>
-                            </tr>
-                            <tr></tr>
                         </tbody>
                     </table>
                 </div>

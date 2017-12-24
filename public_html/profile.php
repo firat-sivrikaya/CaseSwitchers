@@ -86,19 +86,30 @@
                 <div class="row">
                     <div class="col-sm-3">
                     <form method="post" action="">
-                        <button class="btn btn-success btn-sm" type="submit" name="sendmessage">Message</button>
+                    <?php
+                        if ( $login_id != $userid)
+                        {
+                            echo '<button class="btn btn-success btn-sm" type="submit" name="sendmessage">Message</button>';
+                        }
+                    ?>
                     </form>
                     </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-primary btn-sm" type="button" href="profilesettings.php">Settings</a>
-                    </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-info btn-sm" type="button" href="inbox.php">Inbox</a>
-                    </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-info btn-sm" type="button" href="favorites.php">Favorites</a>
-                    </div>
+                    <?php
+                        if ( $login_id == $userid )
+                        {
+                            echo '<div class="col-sm-3">
+                                    <a class="btn btn-primary btn-sm" type="button" href="profilesettings.php">Settings</a>
+                                </div>
+                                <div class="col-sm-3">
+                                    <a class="btn btn-info btn-sm" type="button" href="inbox.php">Inbox</a>
+                                </div>
+                                <div class="col-sm-3">
+                                    <a class="btn btn-info btn-sm" type="button" href="favorites.php">Favorites</a>
+                                </div>';
+                        }
+                    ?>
                 </div>
+                    
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="list-group">
