@@ -202,7 +202,7 @@
                                         echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
                                         echo "<td>".$entryrating."</td>";
                                         echo '<td>'.$commentcount.'</td>';
-                                        echo '<td>'.$postcategoryname.'</td>';
+                                        echo '<td><a href="categoryposts.php?id='.$postcategoryid.'">'.$postcategoryname.'</a></td>';
                                         echo "</tr>";
                                     }
                                 }
