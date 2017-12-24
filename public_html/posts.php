@@ -16,46 +16,55 @@
         $category = mysqli_real_escape_string($db, $_POST['selected_category']);
         $subCategory = mysqli_real_escape_string($db, $_POST['selected_subcategory']);
         $postContent = mysqli_real_escape_string($db, $_POST['post_content']);
-        $query = "INSERT INTO Entry (creationdate, content) VALUES ('$atime', '$postContent')";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-        $query = "SELECT entryID FROM Entry WHERE creationdate = '$atime' AND content = '$postContent'"; 
-        $result = $db->query($query);
-        while($row = $result->fetch_assoc()){
-            $entryID = $row["entryID"]; 
-        }
-        $query = "SELECT userID FROM User WHERE username = '$login_session'"; 
-        $result = $db->query($query);
-        while($row = $result->fetch_assoc()){
-            $userID = $row["userID"]; 
-        }
-        $query = "INSERT INTO Post VALUES ($entryID, '$postTitle')";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
         
-        $query = "INSERT INTO Owns VALUES ($entryID, $userID)";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-        $query = "SELECT ID, categoryname FROM Category WHERE categoryname = '$category'"; 
-        $result = $db->query($query);
-        $row = $result->fetch_assoc();
-        $categoryID = $row["ID"]; 
-        $categoryname = $row['categoryname'];
-        $query = "SELECT sub_id, subcategoryname FROM subcategory WHERE subcategoryname = '$subCategory'"; 
-        $result = $db->query($query);
-        $row = $result->fetch_assoc();
-        $subcategoryID = $row["sub_id"];
-        $subcategoryname = $row["subcategoryname"];
-        
-        if(!$row)
+        if (strlen($postTitle) == 0 )
         {
-            // Check if subcategory belongs to category. Act accordingly.
-            echo '<div class="alert alert-danger" role="alert">Subcategory '.$subcategoryname.' does not belong to '.$categoryname.'. Please choose the correct category. </div>'; 
+            echo '<div class="alert alert-danger" role="alert">Post title cannot be empty.</div>';
         }
-        $query = "INSERT INTO PostCategory VALUES ($entryID, $categoryID, $subcategoryID)";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
-        
-        if ($data)
+        else
         {
-            echo '<div class="alert alert-success" role="alert">Your post has been submitted!</div>'; 
+            $query = "INSERT INTO Entry (creationdate, content) VALUES ('$atime', '$postContent')";
+            $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+            $query = "SELECT entryID FROM Entry WHERE creationdate = '$atime' AND content = '$postContent'"; 
+            $result = $db->query($query);
+            while($row = $result->fetch_assoc()){
+                $entryID = $row["entryID"]; 
+            }
+            $query = "SELECT userID FROM User WHERE username = '$login_session'"; 
+            $result = $db->query($query);
+            while($row = $result->fetch_assoc()){
+                $userID = $row["userID"]; 
+            }
+            $query = "INSERT INTO Post VALUES ($entryID, '$postTitle')";
+            $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+            $query = "INSERT INTO Owns VALUES ($entryID, $userID)";
+            $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+            $query = "SELECT ID, categoryname FROM Category WHERE categoryname = '$category'"; 
+            $result = $db->query($query);
+            $row = $result->fetch_assoc();
+            $categoryID = $row["ID"]; 
+            $categoryname = $row['categoryname'];
+            $query = "SELECT sub_id, subcategoryname FROM subcategory WHERE subcategoryname = '$subCategory'"; 
+            $result = $db->query($query);
+            $row = $result->fetch_assoc();
+            $subcategoryID = $row["sub_id"];
+            $subcategoryname = $row["subcategoryname"];
+
+            if(!$row)
+            {
+                // Check if subcategory belongs to category. Act accordingly.
+                echo '<div class="alert alert-danger" role="alert">Subcategory '.$subcategoryname.' does not belong to '.$categoryname.'. Please choose the correct category. </div>'; 
+            }
+            $query = "INSERT INTO PostCategory VALUES ($entryID, $categoryID, $subcategoryID)";
+            $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+
+            if ($data)
+            {
+                echo '<div class="alert alert-success" role="alert">Your post has been submitted!</div>'; 
+            }
         }
+        
     }
 ?>
 <html>
@@ -293,10 +302,6 @@
                 <h4>New Post</h4>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <label>Post Title </label>
-                        <input name="post_title" type="text">
-                    </li>
-                    <li class="list-group-item">
                         <label>Select Category</label>
                         <select name="selected_category" id="select_subcategory" onchange='this.form.submit()'>
                             <optgroup label="Categories">
@@ -330,6 +335,10 @@
                                     ?>
                                 </optgroup>
                             </select>
+                    </li>
+                    <li class="list-group-item">
+                        <label>Post Title </label>
+                        <input name="post_title" type="text">
                     </li>
                     <li class="list-group-item">
                         <textarea class="input-lg" name="post_content">Put your post here</textarea>
