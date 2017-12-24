@@ -113,7 +113,7 @@
                 <div class="row">
                 <form method="post" action="">
                     <div class="col-sm-8 col-sm-pull-1">
-                        <input type="search" name="Search" placeholder="" ="Search">
+                        <input type="search" name="Search" placeholder="Search">
                     </div>
                     <div class="col-sm-4">
                         <button class="btn btn-default btn-sm" type="Submit">Search </button>
@@ -139,9 +139,7 @@
                         </thead>
                         <tbody>
                         <?php
-
                             if(isset($_POST['Search'])){
-
                                 $pattern = $_POST['Search'];
                                 $query = "SELECT * FROM Post, Entry WHERE (postID = entryID AND topicname LIKE '%$pattern%') ORDER BY creationdate DESC"; 
                                 $result = $db->query($query);
@@ -206,15 +204,12 @@
                                         echo '<td>'.$commentcount.'</td>';
                                         echo '<td>'.$postcategoryname.'</td>';
                                         echo "</tr>";
-
                                     }
                                 }
                                     else
                                         header("location: posts.php");
                             }
-
                             else{
-
                                 $query = "SELECT * FROM Post, Entry WHERE postID = entryID ORDER BY creationdate DESC"; 
                                 $result = $db->query($query);
                                                          
@@ -275,7 +270,7 @@
                                     echo '<td><a href="profile.php?id='.$postownerid.'">'.$postownername.'</a></td>';
                                     echo "<td>".$entryrating."</td>";
                                     echo '<td>'.$commentcount.'</td>';
-                                    echo '<td>'.$postcategoryname.'</td>';
+                                    echo '<td><a href="categoryposts.php?id='.$postcategoryid.'">'.$postcategoryname.'</a></td>';
                                     echo "</tr>";
                                 }
                             }
