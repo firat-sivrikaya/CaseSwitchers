@@ -99,7 +99,7 @@
                                 //todo
                                
                                 echo "<tr>";
-                                echo "<td>".$categoryname."</td>";
+                                echo '<td><a href="categoryposts.php?id='.$categoryID.'">'.$categoryname.'</a></td>';
                                 echo "<td>".$postcount."</td>";
                                 echo "</tr>";
                             }
