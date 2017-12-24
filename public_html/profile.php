@@ -13,6 +13,7 @@
     $profileinfo = $row['profile_info'];
     $dateofregistration = $row['date_of_registration'];
     $userlevel = $row['userlevel'];
+    $avatarloc = $row["avatarloc"];
 
     if(isset($_POST["sendmessage"]))
     {
@@ -81,7 +82,7 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="row">
-                    <div class="col-md-6 col-md-offset-3"><img class="img-circle img-responsive" src="assets/img/M:\Bilkent\CS353\Project\Frontend\profilepage\elon-must.jpg" width="200" height="200"></div>
+                    <div class="col-md-6 col-md-offset-3"><img class="img-circle img-responsive" src="assets/img/<?php echo $avatarloc; ?>" width="200" height="200"></div>
                 </div>
                 <div class="row">
                     <div class="col-sm-3">
