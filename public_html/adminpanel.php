@@ -1,7 +1,5 @@
 <?php
     include("session.php");
-
-
     function deleteComment($db, $deletecommentid)
     {
             $commentid = $deletecommentid;
@@ -53,31 +51,39 @@
                 return;
             }   
     }
-
     if(isset($_POST['create_category'])){
-
         $category = mysqli_real_escape_string($db, $_POST['create_category_name']);
-
         $query = "INSERT INTO Category (categoryname) VALUES ('$category')";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+        $data = mysqli_query ($db,$query);
+        if($data)
+        {
+            echo '<div class="alert alert-success" role="alert">Category '.$category.' has been created successfully. </div>';     
+        }
+        else
+        {
+            echo '<div class="alert alert-danger" role="alert">Category '.$category.' could not be created. </div>';
+        }
     }
-
     if(isset($_POST['create_subcategory'])){
-
         $subcategory = mysqli_real_escape_string($db, $_POST['create_subcategory_name']);
         $catname = $_POST['parent_category'];
         //echo '<div class="alert alert-success" role="alert">'.$catname.'</div>';
-
         $query = "SELECT ID FROM Category WHERE categoryname='$catname'";
         $result = $db->query($query);
-
         $row = $result->fetch_assoc();
         $categoryID = $row["ID"];
               
         $query = "INSERT INTO Subcategory (c_id, subcategoryname) VALUES ($categoryID, '$subcategory')";
-        $data = mysqli_query ($db,$query)or die(mysqli_error($db));
+        $data = mysqli_query ($db,$query);
+        if($data)
+        {
+            echo '<div class="alert alert-success" role="alert">Subcategory '.$subcategory.' has been created successfully. </div>';     
+        }
+        else
+        {
+            echo '<div class="alert alert-danger" role="alert">Subcategory '.$subcategory.' could not be created. </div>';
+        }
     }
-
     if(isset($_POST['change_subcategory']))
     {
         $parentname = $_POST['change_parent_name'];
@@ -103,7 +109,6 @@
             echo '<div class="alert alert-success" role="alert">Parent category of '.$sub_id.' is changed to '.$c_id.' successfully. </div>'; 
         }
     }
-
     if(isset($_POST['ban_user']))
     {
         $bannedid = $_POST['banned_id'];
@@ -121,8 +126,6 @@
         {
             $query = "INSERT INTO bannedusers VALUES ($bannedid, $adminid)";
             $data = mysqli_query ($db,$query);
-
-
             if($data)
             {
                 echo '<div class="alert alert-success" role="alert">User with ID '.$bannedid.' banned successfully. </div>';
@@ -133,9 +136,7 @@
             }           
         }
         
-
     }
-
     if(isset($_POST['unban_user']))
     {
         $unbannedid = $_POST['unbanned_id'];
@@ -150,7 +151,6 @@
             $sql = "DELETE FROM bannedusers WHERE banned_id = '$unbannedid'";
             $result = mysqli_query($db,$sql);
             //$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-
             if($result)
             {
                 echo '<div class="alert alert-success" role="alert">User with ID '.$unbannedid.' unbanned successfully. </div>';
@@ -166,7 +166,6 @@
         }
        
     }
-
     if(isset($_POST['update_bio']))
     {
         $userid = $_POST['user_id'];
@@ -196,10 +195,8 @@
             echo '<div class="alert alert-danger" role="alert">User with ID '.$userid.' could not be found. </div>';
         }
     }
-
     if(isset($_POST['delete_post']))
     {
-
         $postid = $_POST['delete_post_id'];
                 
         $sql = "SELECT * FROM post WHERE postID = $postid";
@@ -209,22 +206,17 @@
         {
             $sql = "DELETE FROM PostCategory WHERE p_id = $postid";
             $result = mysqli_query($db, $sql);
-
             $sql = "DELETE FROM owns WHERE e_id = $postid";
             $result = mysqli_query($db, $sql);
-
             $sql = "DELETE FROM rates WHERE e_id = $postid";
             $result = mysqli_query($db, $sql);
-
             $sql = "SELECT c_id FROM PostComments WHERE p_id = $postid";
             $resultf = mysqli_query($db, $sql);
-
             while( $rowc = mysqli_fetch_array($resultf, MYSQLI_ASSOC))
             {
                 $commentid2 = $rowc["c_id"];
                 deleteComment($db, $commentid2);
             }
-
             $sql = "DELETE FROM PostComments WHERE p_id = $postid";
             $result = mysqli_query($db, $sql);            
             
@@ -246,10 +238,8 @@
         }
         
     }
-
     if(isset($_POST['delete_comment']))
     {
-
             $commentid = $_POST['delete_comment_id'];
             $pcommentid = $commentid;        
             $sql = "SELECT * FROM comment WHERE commentID = $commentid";
@@ -302,52 +292,36 @@
             }        
             
         }
-
         if(isset($_POST['delete_category'])){
-
-
-            
+            //todo
         }
-
         if(isset($_POST['edit_post_button'])){
-
             $editpostid = $_POST['edit_post_id'];
             $editpostcontent = $_POST['edit_post_content'];
             $editpostsubcategory = $_POST['edit_post_subcategory'];
-
             $sql = "UPDATE Entry SET content = '$editpostcontent' WHERE entryID = $editpostid";
             $result = mysqli_query($db, $sql);
-
             $sql = "SELECT * FROM Subcategory WHERE subcategoryname = '$editpostsubcategory'";
             $result = $db->query($sql);
             $row = $result->fetch_assoc(); 
             $parentcatid = $row["c_id"];
             $subcatid = $row["sub_id"];
-
             $sql = "UPDATE Postcategory SET c_id = $parentcatid, s_id = $subcatid WHERE p_id = $editpostid";
             $result = $db->query($sql);      
-
             if($result){
                 echo '<div class="alert alert-success" role="alert">Post with ID '.$editpostid.' is edited successfully. </div>';
             }
-
             else
                 echo '<div class="alert alert-danger" role="alert">Post with ID '.$editpostid.' does not exist. </div>';
-
         }
-
         if(isset($_POST['edit_comment_button'])){
-
             $editcommentid = $_POST['edit_comment_id'];
             $editcommentcontent = $_POST['edit_comment_content'];
-
             $sql = "UPDATE Entry SET content = '$editcommentcontent' WHERE entryID = $editcommentid";
             $result = mysqli_query($db, $sql);
-
             if($result){
                 echo '<div class="alert alert-success" role="alert">Comment with ID '.$editcommentid.' is edited successfully. </div>';
             }
-
             else
                 echo '<div class="alert alert-danger" role="alert">Comment with ID '.$editcommentid.' does not exist. </div>';
         }
