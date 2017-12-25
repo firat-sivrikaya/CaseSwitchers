@@ -303,7 +303,7 @@
                 <ul class="list-group">
                     <li class="list-group-item">
                         <label>Select Category</label>
-                        <select name="selected_category" id="select_subcategory" onchange='this.form.submit()'>
+                        <select name="selected_category" id="select_subcategory" onchange='this.form.submit()' required>
                             <optgroup label="Categories">
                                 <option style="color: black">Select a category</option>
                                 <?php
@@ -323,7 +323,7 @@
                     </li>
                     <li class="list-group-item">
                         <label>Select Subcategory</label>
-                            <select name="selected_subcategory">
+                            <select name="selected_subcategory" required>
                                 <optgroup label="Subcategories">
                                     <?php
                                         $query = "SELECT subcategoryname FROM Subcategory WHERE c_id = $selectedcatid";
@@ -338,10 +338,10 @@
                     </li>
                     <li class="list-group-item">
                         <label>Post Title </label>
-                        <input name="post_title" type="text">
+                        <input name="post_title" type="text" required>
                     </li>
                     <li class="list-group-item">
-                        <textarea class="input-lg" name="post_content">Put your post here</textarea>
+                        <textarea class="input-lg" name="post_content" required>Put your post here</textarea>
                     </li>
                 </ul>
             </div>
