@@ -1,6 +1,59 @@
 <?php
     include("session.php");
 
+
+    function deleteComment($db, $deletecommentid)
+    {
+            $commentid = $deletecommentid;
+            $pcommentid = $commentid;        
+            $sql = "SELECT * FROM comment WHERE commentID = $commentid";
+            $result = mysqli_query($db, $sql);
+            $countcomment = mysqli_num_rows($result);
+            if ( $countcomment == 1 )
+            {
+                    stepf:
+                    // find parent
+                    $sql = "SELECT * FROM Subcomments WHERE comment_id = $commentid";
+                    $result = mysqli_query($db, $sql);
+                    $count = mysqli_num_rows($result);
+                    if($count == 0 )
+                    {
+                        goto donef;
+                    }
+                    else
+                    {
+                        // step 2: save its child
+                        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                        $subcommentid = $row["subcomment_id"];
+                        // delete parent row
+                        $sql = "DELETE FROM rates WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM owns WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Favorites WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Subcomments WHERE comment_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM PostComments WHERE c_id = $commentid";
+                        $result = mysqli_query($db, $sql); 
+                        $sql = "DELETE FROM Comment WHERE commentID = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Entry WHERE entryID = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        // parent = child
+                        $commentid = $subcommentid;
+                        // repeat at step 1
+                        goto stepf;                        
+                    }
+                    donef:
+                    return;
+            }
+            else
+            {
+                return;
+            }   
+    }
+
     if(isset($_POST['create_category'])){
 
         $category = mysqli_real_escape_string($db, $_POST['create_category_name']);
@@ -147,10 +200,8 @@
     if(isset($_POST['delete_post']))
     {
 
-        
         $postid = $_POST['delete_post_id'];
-        
-        
+                
         $sql = "SELECT * FROM post WHERE postID = $postid";
         $result = mysqli_query($db, $sql);
         $countpost = mysqli_num_rows($result);
@@ -166,12 +217,12 @@
             $result = mysqli_query($db, $sql);
 
             $sql = "SELECT c_id FROM PostComments WHERE p_id = $postid";
-            $result = mysqli_query($db, $sql);
-            while ( $row = mysqli_fetch_array($result, MYSQLI_ASSOC))
+            $resultf = mysqli_query($db, $sql);
+
+            while( $rowc = mysqli_fetch_array($resultf, MYSQLI_ASSOC))
             {
-                $commentid = $row["c_id"];
-                $sql = "DELETE FROM Subcomments WHERE comment_id = $commentid";
-                $result = mysqli_query($db, $sql);
+                $commentid2 = $rowc["c_id"];
+                deleteComment($db, $commentid2);
             }
 
             $sql = "DELETE FROM PostComments WHERE p_id = $postid";
@@ -194,16 +245,112 @@
             echo '<div class="alert alert-danger" role="alert">Post with ID '.$postid.' does not exist. </div>';
         }
         
-
-        
-        
     }
 
-    /*if(isset($_POST['change_parent'])){
+    if(isset($_POST['delete_comment']))
+    {
 
-        $newParentID = mysqli_real_escape_string($db, $_POST['newID']);
+            $commentid = $_POST['delete_comment_id'];
+            $pcommentid = $commentid;        
+            $sql = "SELECT * FROM comment WHERE commentID = $commentid";
+            $result = mysqli_query($db, $sql);
+            $countcomment = mysqli_num_rows($result);
+            if ( $countcomment == 1 )
+            {
+                    step1:
+                    // find parent
+                    $sql = "SELECT * FROM Subcomments WHERE comment_id = $commentid";
+                    $result = mysqli_query($db, $sql);
+                    $count = mysqli_num_rows($result);
+                    if($count == 0 )
+                    {
+                        goto done;
+                    }
+                    else
+                    {
+                        // step 2: save its child
+                        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                        $subcommentid = $row["subcomment_id"];
+                        // delete parent row
+                        $sql = "DELETE FROM rates WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM owns WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Favorites WHERE e_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Subcomments WHERE comment_id = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM PostComments WHERE c_id = $commentid";
+                        $result = mysqli_query($db, $sql); 
+                        $sql = "DELETE FROM Comment WHERE commentID = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        $sql = "DELETE FROM Entry WHERE entryID = $commentid";
+                        $result = mysqli_query($db, $sql);
+                        // parent = child
+                        $commentid = $subcommentid;
+                        // repeat at step 1
+                        goto step1;                        
+                    }
+                    done:
+                    echo '<div class="alert alert-success" role="alert">Comment with ID '.$pcommentid.' is deleted successfully. </div>';
+            }
+                                
+                
+            else
+            {
+                echo '<div class="alert alert-danger" role="alert">Comment with ID '.$pcommentid.' does not exist. </div>';
+            }        
+            
+        }
 
-    }*/
+        if(isset($_POST['delete_category'])){
+
+
+            
+        }
+
+        if(isset($_POST['edit_post_button'])){
+
+            $editpostid = $_POST['edit_post_id'];
+            $editpostcontent = $_POST['edit_post_content'];
+            $editpostsubcategory = $_POST['edit_post_subcategory'];
+
+            $sql = "UPDATE Entry SET content = '$editpostcontent' WHERE entryID = $editpostid";
+            $result = mysqli_query($db, $sql);
+
+            $sql = "SELECT * FROM Subcategory WHERE subcategoryname = '$editpostsubcategory'";
+            $result = $db->query($sql);
+            $row = $result->fetch_assoc(); 
+            $parentcatid = $row["c_id"];
+            $subcatid = $row["sub_id"];
+
+            $sql = "UPDATE Postcategory SET c_id = $parentcatid, s_id = $subcatid WHERE p_id = $editpostid";
+            $result = $db->query($sql);      
+
+            if($result){
+                echo '<div class="alert alert-success" role="alert">Post with ID '.$editpostid.' is edited successfully. </div>';
+            }
+
+            else
+                echo '<div class="alert alert-danger" role="alert">Post with ID '.$editpostid.' does not exist. </div>';
+
+        }
+
+        if(isset($_POST['edit_comment_button'])){
+
+            $editcommentid = $_POST['edit_comment_id'];
+            $editcommentcontent = $_POST['edit_comment_content'];
+
+            $sql = "UPDATE Entry SET content = '$editcommentcontent' WHERE entryID = $editcommentid";
+            $result = mysqli_query($db, $sql);
+
+            if($result){
+                echo '<div class="alert alert-success" role="alert">Comment with ID '.$editcommentid.' is edited successfully. </div>';
+            }
+
+            else
+                echo '<div class="alert alert-danger" role="alert">Comment with ID '.$editcommentid.' does not exist. </div>';
+        }
 ?>
 <html>
 
@@ -301,6 +448,30 @@
                                 $usercount = $row["usercount"];
                                 echo $usercount;
                             ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Top Rated User: 
+                            <?php 
+                                $query= "SELECT username FROM User user1, (SELECT o.u_id, SUM(entryrating) as userrating FROM Owns o,  (SELECT e_id, SUM(rating) as entryrating
+                            FROM Rates  GROUP BY e_id) t
+         WHERE o.e_id = t.e_id
+         GROUP BY o.u_id) t2 
+WHERE user1.userID = t2.u_id AND t2.userrating = (SELECT MAX(userrating) FROM (SELECT o.u_id, SUM(entryrating) as userrating
+FROM Owns o, (SELECT e_id, SUM(rating) as entryrating
+                  FROM Rates GROUP BY e_id) t
+WHERE o.e_id = t.e_id
+GROUP BY o.u_id) t2, User U)";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $topuser = $row["username"];
+                                echo $topuser;
+                            ?></span></li>
+                            <li class="list-group-item list-group-item-warning"><span>Most Populated Category: 
+                            <?php 
+                                $query= "SELECT COUNT(*), c.categoryname FROM Category c, Postcategory pc WHERE pc.c_id = c.ID GROUP BY c.categoryname ORDER BY COUNT(*) DESC LIMIT 1";
+                                $result = $db->query($query);
+                                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+                                $usercount = $row["categoryname"];
+                                echo $usercount;
+                            ?></span></li>
                         </ul>
                     </div>
                 </div>
@@ -310,36 +481,33 @@
                     <div class="col-md-12">
                         <h4>Edit Post</h4>
                         <ul class="list-group">
+                            <form action="" method="post">
                             <li class="list-group-item">
                                 <label>Post ID</label>
-                                <input type="text">
-                            </li>
-                            <li class="list-group-item">
-                                <label>Select Category</label>
-                                <select>
-                                    <optgroup label="This is a group">
-                                        <option value="12" selected="">Blockchain</option>
-                                        <option value="13">This is item 2</option>
-                                        <option value="14">This is item 3</option>
-                                    </optgroup>
-                                </select>
+                                <input type="text" name="edit_post_id">
                             </li>
                             <li class="list-group-item">
                                 <label>Select Subcategory</label>
-                                <select>
+                                <select name="edit_post_subcategory" >
                                     <optgroup label="This is a group">
-                                        <option value="13">This is item 2</option>
-                                        <option value="12" selected="">Altcoins</option>
-                                        <option value="14">This is item 3</option>
+                                    <?php
+                                        $query = "SELECT subcategoryname FROM Subcategory";
+                                        $result = $db->query($query);
+                                        while($row = $result->fetch_assoc()){
+                                            $name = $row['subcategoryname'];
+                                            echo '<option value='.$name.' style="color: black">'.$name.'</option>';
+                                        }
+                                    ?>
                                     </optgroup>
                                 </select>
                             </li>
                             <li class="list-group-item">
-                                <textarea class="input-lg">Put your post here</textarea>
+                                <textarea class="input-lg" name="edit_post_content">Put your post here</textarea>
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="edit_post_button">Submit </button>
                             </li>
+                            </form>
                         </ul>
                     </div>
                 </div>
@@ -361,33 +529,37 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                    <form action="" method="post">
                         <h4>Edit Comment</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Comment ID</label>
-                                <input type="text">
+                                <input type="text" name="edit_comment_id">
                             </li>
                             <li class="list-group-item">
-                                <textarea class="input-lg">Put your comment here</textarea>
+                                <textarea class="input-lg" name="edit_comment_content">Put your comment here</textarea>
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="edit_comment_button">Submit </button>
                             </li>
                         </ul>
                     </div>
+                    </form>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
+                    <form action="" method="post">
                         <h4>Delete Comment</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label>Comment ID</label>
-                                <input type="text">
+                                <input type="text" name="delete_comment_id">
                             </li>
                             <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
+                                <button class="btn btn-success" type="submit" name="delete_comment">Submit </button>
                             </li>
                         </ul>
+                        </form>
                     </div>
                 </div>
                 <div class="row">
