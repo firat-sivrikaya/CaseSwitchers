@@ -292,9 +292,7 @@
             }        
             
         }
-        if(isset($_POST['delete_category'])){
-            //todo
-        }
+
         if(isset($_POST['edit_post_button'])){
             $editpostid = $_POST['edit_post_id'];
             $editpostcontent = $_POST['edit_post_content'];
@@ -581,20 +579,6 @@ GROUP BY o.u_id) t2, User U)";
                         </ul>
                     </div>
                 </form>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4>Delete Category</h4>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <label>Category ID</label>
-                                <input type="text">
-                            </li>
-                            <li class="list-group-item">
-                                <button class="btn btn-success" type="button">Submit </button>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
