@@ -1,7 +1,5 @@
 <?php
     include("session.php");
-
-
 ?>
 <html>
 
@@ -62,8 +60,17 @@
                     <div class="col-sm-4">
                         <button class="btn btn-default btn-sm" type="submit">Search </button>
                     </div>
-                </form>
+                
                 </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <input type="number" name="lowrange" step="1" placeholder="Lower rating">
+                    </div>
+                    <div class="col-sm-offset-4 col-sm-4">
+                        <input type="number" name="highrange" step="1" placeholder="Upper rating">
+                    </div>
+                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -80,10 +87,10 @@
                         </thead>
                         <tbody>
                         <?php
-
                             if(isset($_POST['Search'])){
-
                                 $pattern = $_POST['Search'];
+                                $lowerrating = $_POST["lowrange"];
+                                $upperrating = $_POST["highrange"];
                                 $query = "SELECT * FROM User WHERE username LIKE '%$pattern%'";
                                 $result = $db->query($query);
                             
@@ -116,14 +123,53 @@
                                         echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
                                         echo "<td>".$totalrating."</td>";
                                         echo "</tr>";
-
                                     }
                                 }
-
                                 else
-                                    header("location: users.php");
-                            }
+                                {
+                                    if(strlen($lowerrating) !=0 && strlen($upperrating) != 0 )
+                                    {
+                                        $query = "SELECT * FROM User";
+                                        $result = $db->query($query);
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $username = $row["username"];
+                                            $userid = $row["userID"];
 
+
+                                            //Select owner ID from postID
+                                            $query2 = "SELECT * FROM Owns WHERE u_id = '$userid'";
+                                            $result2 = $db->query($query2);
+                                            $totalrating = 0;
+                                            while ($row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC)) {
+                                                $entryid = $row2["e_id"];
+                                                $query3 = "SELECT e_id, sum(rating) as entryrating FROM Rates WHERE e_id = '$entryid'";
+                                                $result3 = $db->query($query3);
+                                                $row3 = mysqli_fetch_array($result3, MYSQLI_ASSOC);
+                                                $entryrating = $row3["entryrating"];
+                                                $totalrating = $totalrating + (int)$entryrating;
+                                            }
+
+                                            //Select rating from rates
+                                            //todo
+
+                                            //Select comments from comments
+                                            //todo
+                                            if($totalrating >= $lowerrating && $totalrating <= $upperrating)
+                                            {
+                                                echo "<tr>";
+                                                echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
+                                                echo "<td>".$totalrating."</td>";
+                                                echo "</tr>";    
+                                            }
+                                        }  
+                                    }
+                                    else
+                                    {
+                                        header("location: users.php");
+                                    }
+                                }
+                                    
+                            }
                             else{
                                 $query = "SELECT * FROM User"; 
                                 $result = $db->query($query);
@@ -157,7 +203,6 @@
                                     echo '<td><a href="profile.php?id='.$userid.'">'.$username.'</a></td>';
                                     echo "<td>".$totalrating."</td>";
                                     echo "</tr>";
-
                             }
                             }
                         ?>
